@@ -7,31 +7,45 @@ Liquid Engine Mission Control (Capstone Project)
 A modern glass-morphism Mission Control interface with a React + Vite frontend and a FastAPI backend.
 This project provides real-time telemetry, safety monitoring, and operator workflow tools for a liquid rocket engine test stand.
 
-📂 Project Structure
-.
-├── frontend/               # React + Vite UI
-│   ├── src/
-│   │   ├── App.jsx         # Main application layout
-│   │   ├── App.css         # Layout + styling
-│   │   ├── index.css       # Global glassmorphism styles
-│   │   ├── components/     # Reusable status cards + UI panels
-│   │   │   ├── NavBar.jsx
-│   │   │   ├── StatusPanel.jsx
-│   │   │   ├── ConnectionsPanel.jsx
-│   │   │   ├── TelemetryTiles.jsx
-│   │   │   ├── ValvesStatusPanel.jsx
-│   │   │   ├── ThrustChart.jsx
-│   │   │   └── ...
-│   └── package.json
-│
-├── backend/                # FastAPI WebSocket server
-│   ├── main.py             # FastAPI app entrypoint
-│   ├── requirements.txt    # Python dependencies
-│   └── ...
-│
-├── README.md
-└── .gitignore
+📂 Project Structure (bullets)
 
+frontend/
+
+src/
+
+App.jsx – Main application layout
+
+App.css – Layout & styling
+
+index.css – Global glassmorphism styles
+
+components/ – Reusable status cards & UI panels
+
+NavBar.jsx
+
+StatusPanel.jsx
+
+ConnectionsPanel.jsx
+
+TelemetryTiles.jsx
+
+ValvesStatusPanel.jsx
+
+ThrustChart.jsx
+
+… (other components)
+
+package.json – Frontend dependencies
+
+backend/
+
+main.py – FastAPI app entrypoint
+
+requirements.txt – Python dependencies
+
+README.md – Project documentation
+
+.gitignore – Files ignored by Git
 🚀 Frontend (React + Vite)
 Features
 
