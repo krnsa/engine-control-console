@@ -1,0 +1,156 @@
+.app-wrap{
+  max-width:1600px;
+  margin:18px auto 32px;
+  padding:0 18px;
+}
+
+/* Title centered at the very top */
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:6px 0 8px;
+}
+.header h1{ text-align:center; }
+
+/* Global status bar (one-line summary) */
+.statusbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 14px;
+  margin:8px auto 16px;
+  border-radius:14px;
+  border:1px solid var(--glass-border);
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+  backdrop-filter:blur(14px);
+}
+.statusbar .left{ display:flex; align-items:center; gap:10px; }
+.statusbar .right{ display:flex; align-items:center; gap:10px; }
+.statusbar .dot{ width:10px; height:10px; border-radius:999px; display:inline-block; }
+.statusbar .dot.ok{ background:var(--ok); }
+.statusbar .dot.warn{ background:var(--warn); }
+.statusbar .dot.bad{ background:var(--bad); }
+
+.panel{ padding:18px; }
+.panel h3{ margin:0 0 10px; }
+
+/* grid placements */
+.col-span-3{ grid-column:span 3; }
+.col-span-4{ grid-column:span 4; }
+.col-span-5{ grid-column:span 5; }
+.col-span-6{ grid-column:span 6; }
+.col-span-9{ grid-column:span 9; }
+.col-span-12{ grid-column:span 12; }
+
+@media (max-width: 1200px){
+  .col-span-9,.col-span-6,.col-span-5,.col-span-4,.col-span-3{ grid-column:span 12; }
+}
+
+/* Floating Pad Environment card (standalone top-right) */
+.pad-float{
+  position: fixed;
+  top: 142px;           /* sits under title + navbar + statusbar */
+  right: 24px;
+  width: 340px;
+  z-index: 30;
+  pointer-events: auto;
+}
+@media (max-width: 1280px){
+  .pad-float{ position: static; width:auto; margin-bottom: 18px; }
+}
+
+/* --- Compact pill-style environment bar --- */
+.envbar{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding:10px;
+  border-radius:14px;
+  border:1px solid var(--glass-border);
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  box-shadow:0 8px 30px rgba(0,0,0,.25);
+}
+
+.env-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);
+  white-space:nowrap;
+}
+
+.env-chip .label{
+  font-size:12px;
+  color:var(--txt-dim);
+  letter-spacing:.02em;
+}
+
+.env-chip .value{
+  font-weight:700;
+  font-size:13px;
+}
+
+.env-chip.ok{
+  border-color:rgba(56,211,159,.35);
+  background:rgba(56,211,159,.08);
+}
+.env-chip.bad{
+  border-color:rgba(255,93,93,.35);
+  background:rgba(255,93,93,.08);
+}
+
+/* small status dot reused from your palette */
+.env-chip .dot{
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  display:inline-block;
+}
+
+/* ----- Top-right HUD stack (under the env pill) ----- */
+.hud-inline{
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;            /* no card look */
+}
+
+.hud-inline .summary{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 13px;
+  opacity: .95;
+}
+
+/* small inline chips for interlocks */
+.inline-chips{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+}
+.inline-chip{
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,.05);
+  font-weight: 700;
+  font-size: 12px;
+}
+.inline-chip.ok{   border-color: rgba(56,211,159,.35); background: rgba(56,211,159,.10); }
+.inline-chip.warn{ border-color: rgba(255,184,77,.35); background: rgba(255,184,77,.12); }
+.inline-chip.ghost{border-color: rgba(255,255,255,.12); background: rgba(255,255,255,.05);}
+
+/* keep the pad env floating container as your “dock” */
+.pad-float{ /* already in your file */ }
+
+/* Center everything inside the top-right HUD stack */
+.pad-float{
+  display:flex;
+  flex-direction:column;
+  align-items:center;      /* center horizontally */
+  gap:10px;
+}
+

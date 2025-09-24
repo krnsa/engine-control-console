@@ -1,0 +1,186 @@
+/* --- Global (no Tailwind/PostCSS) --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
+:root{
+  --bg-0:#0a0f17;
+  --glass:rgba(255,255,255,.06);
+  --glass-strong:rgba(255,255,255,.10);
+  --glass-border:rgba(255,255,255,.16);
+  --txt-0:#e9eef7;
+  --txt-dim:#9fb3cf;
+  --acc-1:#12b3ff;
+  --acc-2:#7c9eff;
+  --ok:#38d39f;
+  --warn:#ffb84d;
+  --bad:#ff5d5d;
+}
+
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+html,body{
+  margin:0;
+  font-family:Inter,system-ui,Segoe UI,Helvetica,Arial,sans-serif;
+  color:var(--txt-0);
+  background:
+    radial-gradient(70rem 40rem at 80% -10%, rgba(18,179,255,.25), transparent 60%),
+    radial-gradient(60rem 30rem at -20% 110%, rgba(124,158,255,.18), transparent 70%),
+    var(--bg-0);
+}
+
+/* glass containers */
+.glass{
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(14px);
+  border-radius:16px;
+  box-shadow:0 12px 35px rgba(0,0,0,.35);
+}
+.glass-strong{
+  background:linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.06));
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(16px);
+  border-radius:16px;
+  box-shadow:0 14px 38px rgba(0,0,0,.42);
+}
+
+.tile{
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  border-radius:12px;
+  padding:14px 16px;
+  transition:transform .08s ease, box-shadow .16s ease, background .16s ease;
+}
+.tile:hover{transform:translateY(-1px); box-shadow:0 10px 24px rgba(0,0,0,.35)}
+
+.kicker{
+  color:var(--txt-dim);
+  font-size:.78rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+.dot{width:10px; height:10px; border-radius:999px; display:inline-block; margin-right:8px}
+.dot.ok{background:var(--ok)}
+.dot.bad{background:var(--bad)}
+
+.tag{font-size:.78rem; padding:.2rem .55rem; border-radius:.6rem; border:1px solid var(--glass-border)}
+.tag.ok{color:var(--ok); border-color:rgba(56,211,159,.35); background:rgba(56,211,159,.08)}
+.tag.bad{color:var(--bad); border-color:rgba(255,93,93,.35); background:rgba(255,93,93,.08)}
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:.8rem 1.1rem; gap:.55rem;
+  font-weight:700; letter-spacing:.04em;
+  border-radius:12px; border:1px solid var(--glass-border);
+  color:var(--txt-0); background:var(--glass); cursor:pointer;
+  transition:transform .08s ease, box-shadow .2s ease, background .2s ease, filter .2s ease;
+}
+.btn:hover{transform:translateY(-1px); box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.btn.primary{background:linear-gradient(180deg, rgba(18,179,255,.35), rgba(124,158,255,.25))}
+.btn.danger{background:linear-gradient(180deg, rgba(255,93,93,.35), rgba(255,93,93,.15)); border-color:rgba(255,93,93,.35)}
+.btn.ghost{background:rgba(255,255,255,.05)}
+.btn:disabled{opacity:.6; filter:saturate(.5); cursor:not-allowed}
+
+/* progress bar */
+.progress{
+  width:100%; height:10px; border-radius:999px;
+  background:rgba(255,255,255,.08); overflow:hidden;
+  border:1px solid var(--glass-border)
+}
+.progress > span{
+  display:block; height:100%;
+  background:linear-gradient(90deg, var(--acc-1), var(--acc-2));
+}
+
+/* layout helpers */
+.grid-12{display:grid; grid-template-columns:repeat(12,1fr); gap:18px}
+.section{padding:18px; background:var(--glass); border:1px solid var(--glass-border); border-radius:16px}
+
+h1{margin:0; font-size:46px; letter-spacing:.12em}
+h2{margin:0 0 6px 0}
+.mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace}
+
+/* thrust/mini charts wrapper */
+.chart-card{padding:16px; border-radius:16px; background:var(--glass); border:1px solid var(--glass-border)}
+
+/* NAVBAR (compact, tabs-only, under the title) */
+.navbar{
+  display:flex; align-items:center; justify-content:center;
+  padding:6px 10px; margin:6px 0 16px;
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  border:1px solid var(--glass-border); border-radius:14px;
+  backdrop-filter:blur(14px);
+  width:max-content;            /* shrink to content */
+  margin-inline:auto;           /* center the whole bar */
+}
+.nav-tabs{display:flex; gap:8px}
+.nav-tab{
+  padding:.45rem .75rem;        /* compact pill */
+  border-radius:10px;
+  border:1px solid var(--glass-border);
+  background:rgba(255,255,255,.05);
+  cursor:pointer; font-weight:600;
+  color:var(--txt-0);           /* same color as panel titles/content */
+  line-height:1;                /* tight height */
+}
+.nav-tab.active{
+  background:linear-gradient(180deg, rgba(18,179,255,.30), rgba(124,158,255,.20));
+  border-color:rgba(18,179,255,.35);
+}
+
+
+/* Modal */
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.55);
+  display:flex; align-items:center; justify-content:center; z-index:100;
+}
+.modal{
+  width:min(900px, 92vw);
+  background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.05));
+  border:1px solid var(--glass-border); border-radius:16px; backdrop-filter:blur(16px);
+  box-shadow:0 18px 50px rgba(0,0,0,.6);
+  padding:16px;
+}
+.modal-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px}
+.modal-close{background:transparent; border:none; color:var(--txt-0); font-size:22px; cursor:pointer}
+
+/* camera grid */
+.cams{display:grid; grid-template-columns:repeat(3, 1fr); gap:16px}
+.cam{
+  aspect-ratio:16/9; background:#0f1521; border:1px solid var(--glass-border);
+  border-radius:12px; overflow:hidden; position:relative;
+}
+.cam .label{
+  position:absolute; left:10px; top:10px; font-weight:700; font-size:.8rem;
+  padding:.25rem .45rem; border-radius:.4rem; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.15)
+}
+
+/* --- Valve row alignment + compact typography --- */
+.valve-row{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; padding:14px 16px; border-radius:12px;
+}
+
+.valve-left{ min-width:0; }              /* allow wrapping neatly */
+.valve-label{
+  font-size:0.95rem;                     /* a bit smaller */
+  line-height:1.25;                      /* tighter lines */
+  font-weight:700;
+  color:var(--txt-0);
+  word-break:break-word;
+}
+
+.valve-right{
+  display:flex; align-items:center; gap:10px;
+}
+
+.pill-badge{
+  padding:.18rem .6rem;                  /* compact */
+  font-weight:700;
+}
+
+/* ensure the dot is visually centered with the badge */
+.valve-right .dot{
+  width:10px; height:10px; border-radius:999px;
+  display:inline-block; flex:0 0 auto;
+}

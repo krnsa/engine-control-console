@@ -1,0 +1,23 @@
+# ---- Node / Vite ----
+node_modules/
+dist/
+build/
+*.log
+.cache/
+.vite/
+coverage/
+
+# ---- Python / FastAPI ----
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+.env.*
+
+# ---- OS / Editor ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
