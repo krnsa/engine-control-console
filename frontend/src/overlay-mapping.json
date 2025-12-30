@@ -1,0 +1,23 @@
+{
+  "svgWidth": 2000,
+  "svgHeight": 1200,
+  "overlays": [
+    {
+      "id": "p_main",
+      "label": "Main Pressure",
+      "sensor": "pressure_main",
+      "type": "pressure",
+      "warn": 5.0,
+      "xPercent": 42.5,
+      "yPercent": 28.3
+    },
+    {
+      "id": "valve_fuel",
+      "label": "Fuel Valve",
+      "sensor": "valve_fuel",
+      "type": "valve",
+      "xPercent": 62.1,
+      "yPercent": 45.2
+    }
+  ]
+}

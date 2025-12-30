@@ -1,0 +1,71 @@
+/* frontend/src/components/LiveChartModal.css */
+
+/* Full-screen darkened overlay */
+.chart-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal container */
+.chart-modal {
+  width: 90vw;
+  height: 85vh;
+
+  background: linear-gradient(
+    180deg,
+    rgba(30, 36, 46, 0.95),
+    rgba(15, 20, 28, 0.95)
+  );
+
+  border-radius: 16px;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.6);
+
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+/* Header */
+.chart-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.chart-modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e6edf5;
+  letter-spacing: 0.04em;
+}
+
+/* Close button */
+.chart-modal-header button {
+  background: none;
+  border: none;
+  color: #e6edf5;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 4px 10px;
+}
+
+.chart-modal-header button:hover {
+  color: #ff6b6b;
+}
+
+/* Chart content */
+.chart-modal-content {
+  flex: 1;
+  padding-top: 12px;
+}

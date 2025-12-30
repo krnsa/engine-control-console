@@ -1,45 +1,109 @@
-import React from "react";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Area } from "recharts";
+// frontend/src/components/ThrustChart.jsx
 
-export default function ThrustChart({ data = [], latest = 0 }) {
-  const view = Array.isArray(data) ? data.map((d) => ({ time: d.t, thrust: d.y })) : [];
+import React, { useEffect, useState } from "react";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  LinearScale,
+  TimeScale,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import "chartjs-adapter-date-fns";
+
+import { connectEngineSocket, subscribeEngineState } from "../engineSocket";
+import LiveChartModal from "./LiveChartModal";
+
+ChartJS.register(
+  LineElement,
+  PointElement,
+  LinearScale,
+  TimeScale,
+  Tooltip,
+  Legend
+);
+
+const MAX_POINTS = 1000;
+const CHART_HEIGHT = 260; // 🔒 FIXED HEIGHT (CRITICAL)
+
+export default function ThrustChart() {
+  const [dataPoints, setDataPoints] = useState([]);
+  const [zoomed, setZoomed] = useState(false);
+
+  useEffect(() => {
+    connectEngineSocket();
+
+    const unsubscribe = subscribeEngineState((state) => {
+      const thrust = state?.sensors?.thrust;
+      if (!thrust) return;
+
+      const value = Object.values(thrust)[0];
+      if (typeof value !== "number") return;
+
+      setDataPoints((prev) =>
+        [...prev, { x: state.timestamp, y: value }].slice(-MAX_POINTS)
+      );
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const chartData = {
+    datasets: [
+      {
+        label: "Thrust (lbf)",
+        data: dataPoints,
+        borderColor: "#4db6ff",
+        borderWidth: 2,
+        pointRadius: 0,
+      },
+    ],
+  };
+
+  const options = {
+    animation: false,
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        type: "time",
+        time: { unit: "second" },
+      },
+      y: {
+        title: { display: true, text: "lbf" },
+      },
+    },
+  };
 
   return (
     <>
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
-        <div className="kicker">Thrust Profile</div>
-        <div className="mono" style={{ color:"var(--acc-1)", fontWeight:700 }}>{Number(latest ?? 0).toFixed(1)} lbf</div>
+      {/* CLICKABLE GRAPH CONTAINER */}
+      <div
+        onClick={() => setZoomed(true)}
+        style={{
+          position: "relative",
+          height: CHART_HEIGHT,
+          cursor: "pointer",
+        }}
+      >
+        {/* Chart (disable pointer capture) */}
+        <div style={{ pointerEvents: "none", height: "100%" }}>
+          <Line data={chartData} options={options} />
+        </div>
       </div>
-      <div style={{ height: 320 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={view}>
-            <CartesianGrid stroke="rgba(255,255,255,.12)" strokeDasharray="3 3" />
-            <XAxis
-              dataKey="time"
-              tickFormatter={(t) => new Date(t).toLocaleTimeString()}
-              stroke="rgba(255,255,255,.5)"
-              fontSize={12}
-            />
-            <YAxis
-              stroke="rgba(255,255,255,.5)"
-              fontSize={12}
-              label={{ value:"lbf", angle:-90, position:"insideLeft", fill:"rgba(255,255,255,.6)" }}
-              allowDecimals={false}
-            />
-            <Tooltip
-              contentStyle={{ background:"rgba(12,16,24,.92)", border:"1px solid rgba(255,255,255,.15)", borderRadius:12 }}
-              labelFormatter={(t)=> new Date(t).toLocaleTimeString()}
-            />
-            <defs>
-              <linearGradient id="thrustFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#12b3ff" stopOpacity={0.65} />
-                <stop offset="100%" stopColor="#12b3ff" stopOpacity={0.05} />
-              </linearGradient>
-            </defs>
-            <Area type="monotone" dataKey="thrust" stroke="#12b3ff" strokeWidth={3} fill="url(#thrustFill)" />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+
+      {zoomed && (
+        <LiveChartModal
+          title="Thrust vs Time"
+          onClose={() => setZoomed(false)}
+        >
+          <div style={{ height: "100%" }}>
+            <Line data={chartData} options={options} />
+          </div>
+        </LiveChartModal>
+      )}
     </>
   );
 }

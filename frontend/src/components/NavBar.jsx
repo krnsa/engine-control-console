@@ -8,6 +8,8 @@ import React from "react";
 export default function NavBar({ active="overview", onChange=()=>{} }){
   const tabs = [
     { key:"overview",  label:"Overview"  },
+    { key:"connections", label:"Connections/Battery Status" },
+    { key:"graphs",    label:"Graphs"    },
     { key:"telemetry", label:"Telemetry" },
     { key:"cameras",   label:"Cameras"   },
     { key:"checklist", label:"Checklist" },

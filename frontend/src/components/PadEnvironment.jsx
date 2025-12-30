@@ -36,12 +36,6 @@ export default function PadEnvironment({ env = {} }) {
         <span className="value">{humidity}%</span>
       </div>
 
-      <div className="env-chip">
-        <WiBarometer size={18} />
-        <span className="label">Baro</span>
-        <span className="value">{pressure} hPa</span>
-      </div>
-
       <div className={`env-chip ${crosswind_ok ? "ok" : "bad"}`}>
         <span className={`dot ${crosswind_ok ? "ok" : "bad"}`} />
         <span className="label">Cross-wind</span>

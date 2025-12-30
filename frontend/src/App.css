@@ -154,3 +154,35 @@
   gap:10px;
 }
 
+/* New top-controls placed just under the NavBar. Align to the right so it sits near the tabs. */
+.top-controls{
+  display:flex;
+  justify-content:center; /* center the environment chips under the nav tabs */
+  width:100%;
+  margin-top:6px;         /* small gap under the navbar */
+  gap:12px;
+}
+@media (max-width: 1280px){
+  .top-controls{ justify-content:center; padding:0 12px; }
+}
+
+/* Branding image classes: adjust `--brand-scale` or `max-width` here to change size.
+   - To resize the left image (ghost), edit `.brand-left`.
+   - To resize the right image (rpl), edit `.brand-right`.
+   Keep only one of `max-width` or `max-height` if you want strict control; leaving
+   the other dimension `auto` preserves the original aspect ratio of the PNG. */
+.brand-left, .brand-right{
+  position: fixed !important;
+  top: 8px !important;
+  pointer-events: none !important;
+  z-index: 9999 !important; /* ensure viewport-fixed and above other stacking contexts */
+  opacity: 0.95 !important;
+  /* default sizing: keep natural aspect ratio but cap the displayed size */
+  max-width: 96px;    /* default for left image (ghost). override .brand-right below */
+  max-height: 96px;   /* change this value to constrain height instead */
+  width: auto;
+  height: auto;
+}
+.brand-left{ left: 12px; }
+.brand-right{ right: 12px; max-width: 140px; /* increased size for RPL logo - change as desired */ }
+
