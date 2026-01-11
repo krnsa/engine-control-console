@@ -1,5 +1,7 @@
+/* Author: Aditya Sharma */
+/* Rutgers Rocket Propulsion Laboratory */
 /* --- Global (no Tailwind/PostCSS) --- */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap');
 
 :root{
   --bg-0:#0a0f17;
@@ -19,7 +21,7 @@
 html,body,#root{height:100%}
 html,body{
   margin:0;
-  font-family:Inter,system-ui,Segoe UI,Helvetica,Arial,sans-serif;
+  font-family:"Space Grotesk",system-ui,Segoe UI,Helvetica,Arial,sans-serif;
   color:var(--txt-0);
   background:
     radial-gradient(70rem 40rem at 80% -10%, rgba(18,179,255,.25), transparent 60%),
@@ -58,6 +60,8 @@ html,body{
   letter-spacing:.14em;
   text-transform:uppercase;
 }
+.sub-kicker{ color:var(--txt-dim); font-size:.78rem; letter-spacing:.14em; text-transform:uppercase; opacity:0.95 }
+.conn-label{ font-size:0.95rem; color:inherit }
 
 .dot{width:10px; height:10px; border-radius:999px; display:inline-block; margin-right:8px}
 .dot.ok{background:var(--ok)}
@@ -95,6 +99,26 @@ html,body{
 /* layout helpers */
 .grid-12{display:grid; grid-template-columns:repeat(12,1fr); gap:18px}
 .section{padding:18px; background:var(--glass); border:1px solid var(--glass-border); border-radius:16px}
+
+/* Use this modifier when you want a section without the glass/card background (standalone content) */
+.section.no-bg{ padding:6px 0; background:transparent; border:none; box-shadow:none }
+
+/* Sensor readouts (compact, no background) */
+.sensor-readouts{ display:grid; gap:12px }
+.sensor-readout{ padding:6px 0 }
+.sensor-readout .kicker{ margin-bottom:6px; opacity:0.85 }
+.sensor-readout .progress{ height:8px; border-radius:999px; overflow:hidden; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.03) }
+.sensor-readout .progress > span{ display:block; height:100%; background:linear-gradient(90deg,var(--acc-1),var(--acc-2)); }
+
+/* Batteries styling: inline progress bars */
+.batt-panel{ display:flex; flex-direction:column; gap:12px }
+.battery-row{ display:flex; align-items:center; gap:12px }
+.battery-meta{ width:42%; display:flex; flex-direction:column }
+.battery-label{ font-weight:700; opacity:0.9 }
+.battery-val{ font-size:13px; color:var(--acc-1); font-weight:700 }
+.battery-bar{ flex:1; height:10px; border-radius:999px; background:rgba(255,255,255,0.04); overflow:hidden; border:1px solid rgba(255,255,255,0.03) }
+.battery-bar > span{ display:block; height:100%; background:linear-gradient(90deg,var(--acc-1),var(--acc-2)); }
+
 
 h1{margin:0; font-size:46px; letter-spacing:.12em}
 h2{margin:0 0 6px 0}

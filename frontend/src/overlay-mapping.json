@@ -3,21 +3,30 @@
   "svgHeight": 1200,
   "overlays": [
     {
-      "id": "p_main",
-      "label": "Main Pressure",
-      "sensor": "pressure_main",
+      "id": "p_chamber",
+      "label": "Chamber Pressure",
+      "sensor": "chamberPressure",
       "type": "pressure",
-      "warn": 5.0,
+      "warn": 1000.0,
       "xPercent": 42.5,
       "yPercent": 28.3
     },
     {
-      "id": "valve_fuel",
-      "label": "Fuel Valve",
-      "sensor": "valve_fuel",
-      "type": "valve",
+      "id": "p_lox",
+      "label": "LOX Pressure",
+      "sensor": "tankPressure",
+      "type": "pressure",
+      "warn": 700.0,
       "xPercent": 62.1,
       "yPercent": 45.2
+    },
+    {
+      "id": "valve_main",
+      "label": "Main Valve",
+      "sensor": "mainValve",
+      "type": "valve",
+      "xPercent": 52.5,
+      "yPercent": 60.2
     }
   ]
 }

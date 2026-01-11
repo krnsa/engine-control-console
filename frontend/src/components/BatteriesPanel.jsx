@@ -1,25 +1,32 @@
 import React from "react";
 
 export default function BatteriesPanel({ batteries }) {
+  const fmt = (value) => (typeof value === "number" ? `${value.toFixed(2)} V` : "-");
+
   const rows = [
-    { label: "Controller (Teensy)", value: (batteries?.teensy ?? 0).toFixed(1) + " V" },
-    { label: "DAQ (LabJack T7)", value: (batteries?.ljt7 ?? 0).toFixed(1) + " V" },
-    { label: "Sensor Bus", value: (batteries?.sensors?.p_bus ?? 0).toFixed(1) + " V" },
-    { label: "TC Amplifier", value: (batteries?.sensors?.tc_amp ?? 0).toFixed(1) + " V" },
-    { label: "Aux Rail", value: (batteries?.sensors?.aux ?? 0).toFixed(1) + " V" },
+    { key: "teensy", label: "Controller (Teensy)", value: batteries?.teensy },
+    { key: "ljt7", label: "DAQ (LabJack T7)", value: batteries?.ljt7 },
+    { key: "p_bus", label: "Sensor Bus", value: batteries?.sensors?.p_bus },
+    { key: "tc_amp", label: "TC Amplifier", value: batteries?.sensors?.tc_amp },
+    { key: "aux", label: "Aux Rail", value: batteries?.sensors?.aux }
   ];
 
   return (
-    <>
-      <div className="kicker" style={{ marginBottom: 10 }}>Battery Levels</div>
-      <div style={{ display:"grid", gap:10 }}>
-        {rows.map((r, i) => (
-          <div className="tile" key={i} style={{ display:"flex", justifyContent:"space-between" }}>
-            <span>{r.label}</span>
-            <span className="mono" style={{ color:"var(--acc-1)", fontWeight:700 }}>{r.value}</span>
+    <div className="batt-panel">
+      <div className="kicker" style={{ marginBottom: 12 }}>Battery Levels</div>
+      <div style={{ display: "grid", gap: 12 }}>
+        {rows.map((r) => (
+          <div className="battery-row" key={r.key}>
+            <div className="battery-meta">
+              <div className="battery-label">{r.label}</div>
+              <div className="battery-val">{typeof r.value === "number" ? `${r.value.toFixed(2)} V` : `-`}</div>
+            </div>
+            <div className="battery-bar" aria-hidden>
+              <span style={{ width: r.value ? `${Math.min(100, (r.value / 12) * 100)}%` : `0%` }} />
+            </div>
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }

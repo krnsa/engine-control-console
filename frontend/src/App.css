@@ -1,3 +1,6 @@
+/* Author: Aditya Sharma */
+/* Rutgers Rocket Propulsion Laboratory */
+
 .app-wrap{
   max-width:1600px;
   margin:18px auto 32px;
@@ -185,4 +188,512 @@
 }
 .brand-left{ left: 12px; }
 .brand-right{ right: 12px; max-width: 140px; /* increased size for RPL logo - change as desired */ }
+
+/* Overview layout */
+.overview-grid{
+  display:grid;
+  grid-template-columns: 300px 1fr 260px;
+  gap:18px;
+  align-items:start;
+}
+@media (max-width: 1200px){
+  .overview-grid{ grid-template-columns: 1fr; }
+}
+.overview-left,.overview-center,.overview-right{ min-width:0; }
+.overview-pt-stack{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap:12px;
+}
+
+.gauge-inline{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  padding:0;
+  background:transparent;
+  border:none;
+  border-radius:0;
+}
+.gauge-label{ font-size:11px; text-transform:uppercase; letter-spacing:.12em; opacity:.85; text-align:center; }
+.gauge-value{ font-size:14px; font-weight:700; }
+
+/* P&ID */
+.pid-wrap{
+  position:relative;
+  /* remove the white translucent 'glass' card so diagram sits on the darker pid-shell */
+  background: transparent;
+  border: none;
+  border-radius:16px;
+  padding:14px;
+}
+/* Legacy pid-wrap left intact for other tabs; new diagram uses pid-shell */
+.pid-shell{
+  position:relative;
+  border-radius:18px;
+  padding:16px;
+  background:
+    radial-gradient(900px 420px at 20% 10%, rgba(14,165,233,.10), transparent 60%),
+    radial-gradient(700px 380px at 90% 90%, rgba(239,68,68,.08), transparent 60%),
+    linear-gradient(180deg, rgba(6,8,12,.95), rgba(2,4,8,.98));
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 18px 40px rgba(0,0,0,.55);
+}
+.pid-dark{
+  background:
+    radial-gradient(900px 420px at 20% 10%, rgba(14,165,233,.08), transparent 60%),
+    radial-gradient(700px 380px at 90% 90%, rgba(239,68,68,.06), transparent 60%),
+    #05070b;
+}
+.pid-title{
+  text-align:center;
+  font-weight:700;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  font-size:12px;
+  margin-bottom:8px;
+  opacity:.8;
+}
+.pid-svg{ width:100%; height:auto; display:block; }
+
+.pid-line line{
+  stroke:rgba(140,160,190,0.5);
+  stroke-width:4;
+  stroke-linecap:round;
+}
+.pid-line .active{
+  stroke-dasharray:10 8;
+  animation:pid-flow 2.2s linear infinite;
+  filter:drop-shadow(0 0 10px rgba(34,197,94,.45));
+}
+.flow-n2o{ stroke:#32d74b; }
+.flow-ipa{ stroke:#7ddf64; }
+.flow-ox{ stroke:#2dd4bf; }
+.flow-fuel{ stroke:#a3e635; }
+.flow-chamber{ stroke:#ef4444; }
+
+.pid-vessels rect{
+  stroke:rgba(255,255,255,0.75);
+  stroke-width:2;
+  fill:rgba(12,18,28,0.2);
+}
+.pid-equipment rect,
+.pid-equipment path{
+  stroke:rgba(255,255,255,0.75);
+  stroke-width:2;
+  fill:rgba(12,18,28,0.25);
+}
+.pid-valves rect,
+.pid-valves line{
+  stroke:rgba(255,255,255,0.7);
+  stroke-width:2;
+}
+.pid-valve.open rect{ fill:rgba(34,197,94,.25); }
+.pid-valve.closed rect{ fill:rgba(239,68,68,.25); }
+
+.pid-labels text,
+.pid-schedule text{
+  fill:rgba(235,245,255,0.9);
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.06em;
+}
+.pid-schedule rect{
+  fill:rgba(8,10,16,0.85);
+  stroke:rgba(255,255,255,0.25);
+}
+.pid-sensor circle{
+  fill:rgba(10,15,23,0.95);
+  stroke:rgba(255,255,255,0.65);
+  stroke-width:2;
+}
+.pid-sensor text{
+  fill:rgba(255,255,255,0.85);
+  font-size:10px;
+  font-weight:700;
+  text-anchor:middle;
+}
+
+.pid-values{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(120px, 1fr));
+  gap:10px;
+  margin-top:12px;
+}
+.pid-value{
+  padding:8px 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.14);
+  background:rgba(5,7,11,0.8);
+  min-width:140px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+.pid-tag-label{ font-size:12px; margin-bottom:6px; }
+
+/* Center the status row as a single block and allow wrapping */
+.pid-status-row{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+/* ZOOM modal + controls */
+.pid-zoom-btn{
+  position:absolute;
+  top:12px;
+  right:14px;
+  width:36px;
+  height:36px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  background:transparent;
+  border:1px solid var(--glass-border);
+  color:var(--txt-0);
+  cursor:pointer;
+  z-index:20;
+}
+.pid-zoom-btn svg{ display:block; width:16px; height:16px; }
+.pid-zoom-btn:hover{ background:rgba(255,255,255,0.02); }
+
+.pid-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(5,8,12,0.85);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+.pid-modal-inner{
+  width:min(1400px, 98vw);
+  height:min(860px, 96vh);
+  background:rgba(10,14,18,0.98);
+  border-radius:12px;
+  border:1px solid var(--glass-border);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+.pid-modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.pid-modal-close{
+  width:36px;
+  height:36px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:transparent;
+  border:1px solid var(--glass-border);
+  color:var(--txt-0);
+  padding:0;
+  border-radius:8px;
+  cursor:pointer;
+}
+.pid-modal-close svg{ width:14px; height:14px; }
+.pid-modal-close:hover{ background:rgba(255,255,255,0.02); }
+
+.pid-modal-body{ flex:1; padding:12px; display:flex; align-items:center; justify-content:center; }
+/* Zoom mode: slightly scale down to show more of the diagram in the modal */
+.pid-svg.zoom{ width:95%; height:95%; display:block; transform: scale(0.9); transform-origin: center; transition: transform .12s ease; }
+/* Status badges for sensors, valves and load cells */
+.pid-tag-value.status{
+  display:inline-block;
+  padding:8px 12px;
+  border-radius:8px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.pid-tag-value.status.status-live{ color:var(--ok); background:rgba(56,211,159,.04); border:1px solid rgba(56,211,159,.14); }
+.pid-tag-value.status.status-off{ color:var(--txt-dim); background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.03); }
+.pid-tag-value.status.status-open{ color:var(--ok); background:rgba(56,211,159,.04); border:1px solid rgba(56,211,159,.14); }
+.pid-tag-value.status.status-closed{ color:var(--bad); background:rgba(255,93,93,.03); border:1px solid rgba(255,93,93,.12); }
+.pid-tag-value.status.status-unknown{ color:var(--txt-dim); background:transparent; border:1px solid rgba(255,255,255,.03); }
+
+@keyframes pid-flow{
+  to { stroke-dashoffset: -36; }
+}
+
+/* Hover interactions for schedule & sensor highlighting */
+.pid-schedule .sched-item{ cursor:pointer; transition: fill .12s ease, transform .12s ease; }
+.pid-schedule .sched-item:hover{ fill: var(--acc-2); transform: translateX(2px); }
+
+.pid-sensor circle.hover{
+  stroke: var(--acc-2);
+  stroke-width:3;
+  filter: drop-shadow(0 0 10px rgba(124,158,255,.14));
+  transform-origin: center;
+  transition: all .12s ease;
+}
+
+.pid-value.hovered{
+  transform: translateY(-4px);
+  box-shadow: 0 8px 18px rgba(0,0,0,.45);
+  border-color: rgba(124,158,255,.08);
+}
+.pid-value.hovered .pid-tag-label{ color: var(--acc-2); }
+
+.pid-value.interactive{ cursor: pointer; }
+
+/* Connections */
+.conn-grid{
+  display:grid;
+  gap:28px;
+  grid-template-columns: 1fr 420px; /* main left column + reserved right column for battery */
+  align-items:start;
+}
+@media (max-width: 1200px){
+  .conn-grid{ grid-template-columns: 1fr; }
+}
+.conn-left{ display:flex; flex-direction:column; gap:16px; }
+.conn-stack{ display:grid; gap:12px; }
+.conn-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
+  border-radius:12px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.03);
+}
+.conn-row .conn-dot{ width:10px; height:10px; border-radius:999px; display:inline-block; margin-right:6px }
+.conn-row .conn-dot.ok{ background:var(--accent-green); box-shadow:0 0 6px rgba(16,185,129,0.08) }
+.conn-row .conn-dot.bad{ background:rgba(239,68,68,0.9); box-shadow:0 0 6px rgba(239,68,68,0.06) }
+.conn-row:last-child{ border-bottom:none; padding-bottom:6px; }
+.conn-label{ font-weight:700; font-size:0.95rem; }
+.conn-detail{ font-size:12px; opacity:.7; margin-top:2px }
+/* Make status tags compact */
+.conn-row .tag{ padding:6px 10px; font-size:11px; border-radius:999px; }
+
+
+/* ===== CAMERAS (COLLAPSED) ===== */
+.cams-large {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.cam-large {
+  position: relative;
+  height: 420px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #0b111a, #070c12);
+  border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+}
+
+.cam-large .conn-label {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  font-weight: 700;
+}
+
+/* ===== FULLSCREEN MODAL ===== */
+.camera-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,8,12,0.92);
+  z-index: 99999;
+  display: flex;
+}
+
+.camera-modal-inner.fullscreen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+.camera-modal-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 22px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.camera-modal-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.cam-toggle {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: transparent;
+  color: white;
+  font-weight: 700;
+}
+
+.cam-toggle.active {
+  background: var(--acc-2);
+}
+
+/* GRID */
+.camera-modal-grid {
+  flex: 1;
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+}
+
+.camera-modal-grid.all {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.camera-modal-grid.single {
+  grid-template-columns: 1fr;
+}
+
+/* FEEDS */
+.feed-box {
+  background: linear-gradient(180deg, #0b111a, #070c12);
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.feed-active {
+  box-shadow: 0 0 40px rgba(124,158,255,0.15);
+}
+
+/* Make feed labels white and match the .conn-label typography */
+.feed-label {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-weight: 700;
+  color: var(--txt-0);
+  font-size: 0.95rem; /* match .conn-label */
+  letter-spacing: 0.02em;
+}
+
+/* Ensure collapsed camera labels are also white */
+.cam-large .conn-label { color: var(--txt-0); }
+
+/* Space down the camera health buttons and center them */
+.cam-health-wrapper { display:flex; justify-content:center; margin-top:40px; }
+.cam-health-grid{ margin-top: 12px; }
+
+/* Camera Health buttons */
+.cam-health-grid{
+  display:flex;
+  gap:14px;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.cam-health-btn{
+  position: relative;
+  padding: 14px 22px;
+  border-radius: 8px;
+  border: 1px solid var(--acc-2);
+  font-size: 13px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  background: transparent;
+  color: var(--txt-0);
+  overflow: hidden;
+  box-shadow: 0 0 0 0 transparent;
+  transition: all 0.18s ease-in;
+}
+.cam-health-btn:hover{
+  background: var(--acc-2);
+  box-shadow: 0 0 30px 6px rgba(124,158,255,0.08);
+  transition: all 0.18s ease-out;
+}
+.cam-health-btn.live{ background: linear-gradient(90deg, rgba(124,158,255,0.12), rgba(124,158,255,0.06)); box-shadow:0 6px 30px rgba(124,158,255,0.06); border-color:var(--acc-2); }
+.cam-health-btn.active{ background: var(--acc-2); box-shadow:0 8px 40px rgba(124,158,255,0.12); }
+.cam-health-btn::before{
+  content: '';
+  display: block;
+  width: 0px;
+  height: 86%;
+  position: absolute;
+  top: 7%;
+  left: 0%;
+  opacity: 0;
+  background: #fff;
+  box-shadow: 0 0 50px 30px #fff;
+  transform: skewX(-20deg);
+}
+.cam-health-btn:hover::before{
+  animation: cam-shine 0.5s 0s linear;
+}
+@keyframes cam-shine{
+  from { opacity: 0; left: 0%; }
+  50% { opacity: 1; }
+  to { opacity: 0; left: 100%; }
+}
+.cam-health-btn:active{ box-shadow: 0 0 0 0 transparent; transition: box-shadow 0.12s ease-in; }
+.camera-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(5,8,12,.78);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:200;
+}
+.camera-modal-inner{
+  width:min(1200px, 94vw);
+  height:min(720px, 90vh);
+  background:rgba(15,21,33,.95);
+  border:1px solid var(--glass-border);
+  border-radius:16px;
+  display:flex;
+  flex-direction:column;
+}
+.camera-modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.camera-modal-close{
+  background:transparent;
+  border:1px solid var(--glass-border);
+  color:var(--txt-0);
+  padding:6px 12px;
+  border-radius:10px;
+  cursor:pointer;
+}
+.camera-modal-screen{
+  flex:1;
+  position:relative;
+  background:transparent; /* remove heavy card background inside modal */
+  border-bottom-left-radius:16px;
+  border-bottom-right-radius:16px;
+}
+.camera-modal-screen .label{
+  position:absolute;
+  left:14px;
+  top:14px;
+  font-weight:700;
+  font-size:.95rem; /* match conn-label */
+  padding:0;
+  border-radius:0;
+  background:transparent;
+  border:none;
+  color:var(--txt-0);
+}
 

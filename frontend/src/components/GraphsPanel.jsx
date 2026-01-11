@@ -8,7 +8,7 @@ import {
   LinearScale,
   TimeScale,
   Tooltip,
-  Legend,
+  Legend
 } from "chart.js";
 import "chartjs-adapter-date-fns";
 
@@ -36,7 +36,9 @@ function pickFirstNumber(x) {
 function getSensor(state, key) {
   // supports state.sensors[key] being number OR object with units, etc.
   const raw = state?.sensors?.[key];
-  return pickFirstNumber(raw);
+  const picked = pickFirstNumber(raw);
+  if (typeof picked === "number") return picked;
+  return null;
 }
 
 function Tile({ title, valueText, unitText, children, onOpen }) {
@@ -61,7 +63,7 @@ function Tile({ title, valueText, unitText, children, onOpen }) {
         height: 280,
         display: "flex",
         flexDirection: "column",
-        outline: "none",
+        outline: "none"
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, marginBottom: 8 }}>
@@ -84,7 +86,7 @@ export default function GraphsPanel() {
     thrust: [],
     tankPressure: [],
     chamberPressure: [],
-    temperature: [],
+    temperature: []
   });
 
   const [modalKey, setModalKey] = useState(null);
@@ -95,10 +97,16 @@ export default function GraphsPanel() {
     const unsub = subscribeEngineState((state) => {
       const ts = state?.timestamp ? new Date(state.timestamp) : new Date();
 
-      const thrust = getSensor(state, "thrust");
-      const tankP = getSensor(state, "tankPressure") ?? getSensor(state, "tank_pressure");
-      const chamberP = getSensor(state, "chamberPressure") ?? getSensor(state, "chamber_pressure");
-      const temp = getSensor(state, "temperature") ?? getSensor(state, "temp");
+      const thrust = getSensor(state, "loadCell1") ?? state?.thrust?.loadCell1;
+      const tankP =
+        getSensor(state, "pt1") ??
+        state?.pressures?.pt1;
+      const chamberP =
+        getSensor(state, "pt6") ??
+        state?.pressures?.pt6;
+      const temp =
+        getSensor(state, "tt1") ??
+        state?.temperature?.tt1;
 
       setSeries((prev) => {
         const next = { ...prev };
@@ -135,12 +143,12 @@ export default function GraphsPanel() {
       plugins: { legend: { display: true } },
       scales: {
         x: { type: "time", time: { unit: "second" } },
-        y: { beginAtZero: false },
-      },
+        y: { beginAtZero: false }
+      }
     };
   }, []);
 
-  function makeData(label, points) {
+  function makeData(label, points, color) {
     return {
       datasets: [
         {
@@ -148,16 +156,18 @@ export default function GraphsPanel() {
           data: points,
           borderWidth: 2,
           pointRadius: 0,
-        },
-      ],
+          borderColor: color,
+          backgroundColor: color
+        }
+      ]
     };
   }
 
   const tiles = [
-    { key: "thrust", title: "Thrust vs Time", unit: "lbf", label: "Thrust (lbf)", points: series.thrust },
-    { key: "tankPressure", title: "Tank Pressure vs Time", unit: "psi", label: "Tank Pressure (psi)", points: series.tankPressure },
-    { key: "chamberPressure", title: "Chamber Pressure vs Time", unit: "psi", label: "Chamber Pressure (psi)", points: series.chamberPressure },
-    { key: "temperature", title: "Temp vs Time", unit: "°C", label: "Temperature (°C)", points: series.temperature },
+    { key: "thrust", title: "Thrust vs Time", unit: "lbf", label: "Thrust (lbf)", points: series.thrust, color: "#ef4444" },
+    { key: "tankPressure", title: "Tank Pressure vs Time", unit: "psi", label: "Tank Pressure (psi)", points: series.tankPressure, color: "#0ea5e9" },
+    { key: "chamberPressure", title: "Chamber Pressure vs Time", unit: "psi", label: "Chamber Pressure (psi)", points: series.chamberPressure, color: "#f97316" },
+    { key: "temperature", title: "Temp vs Time", unit: "F", label: "Temperature (F)", points: series.temperature, color: "#22c55e" }
   ];
 
   const modalTile = tiles.find((t) => t.key === modalKey) || null;
@@ -169,7 +179,7 @@ export default function GraphsPanel() {
           display: "grid",
           gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
           gap: 16,
-          width: "100%",
+          width: "100%"
         }}
       >
         {tiles.map((t) => {
@@ -184,7 +194,7 @@ export default function GraphsPanel() {
               unitText={t.unit}
               onOpen={() => setModalKey(t.key)}
             >
-              <Line data={makeData(t.label, t.points)} options={baseOptions} />
+              <Line data={makeData(t.label, t.points, t.color)} options={baseOptions} />
             </Tile>
           );
         })}
@@ -193,7 +203,7 @@ export default function GraphsPanel() {
       {modalTile && (
         <LiveChartModal title={modalTile.title} onClose={() => setModalKey(null)}>
           <div style={{ height: "100%", width: "100%" }}>
-            <Line data={makeData(modalTile.label, modalTile.points)} options={baseOptions} />
+            <Line data={makeData(modalTile.label, modalTile.points, modalTile.color)} options={baseOptions} />
           </div>
         </LiveChartModal>
       )}

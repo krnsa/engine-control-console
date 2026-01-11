@@ -1,31 +1,28 @@
 import React from "react";
 
-export default function CameraHealth({ cams={} }) {
-  const rows = [
-    { k:"a", label:"Camera A", v:cams.a||{} },
-    { k:"b", label:"Camera B", v:cams.b||{} },
-    { k:"c", label:"Camera C", v:cams.c||{} },
+export default function CameraHealth({ connected = {}, onOpenCamera = () => {}, activeCamera = null }) {
+  const cams = [
+    { key: "camera1", label: "Cam 1" },
+    { key: "camera2", label: "Cam 2" },
+    { key: "camera3", label: "Cam 3" }
   ];
+
   return (
-    <>
-      <div className="kicker" style={{marginBottom:10}}>Camera Health</div>
-      <div style={{display:"grid",gap:10}}>
-        {rows.map(r=>{
-          const healthy = (r.v.drop??1) < 1.0;
-          return (
-            <div key={r.k} className="tile" style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-              <span>{r.label}</span>
-              <span style={{display:"flex",gap:8,alignItems:"center"}}>
-                <span className="mono">FPS {r.v.fps ?? "--"}</span>
-                <span className="mono">Drop {r.v.drop ?? "--"}%</span>
-                <span className="mono">{r.v.temp ?? "--"}°C</span>
-                <span className="mono">Last {r.v.last ?? "--"}</span>
-                <span className={`tag ${healthy?"ok":"bad"}`}>{healthy?"OK":"ISSUES"}</span>
-              </span>
-            </div>
-          );
-        })}
+    <div>
+      <div className="kicker" style={{ marginBottom: 12, textAlign: "center" }}>Camera Health</div>
+
+      <div className="cam-health-grid">
+        {cams.map((c) => (
+          <button
+            key={c.key}
+            type="button"
+            className={`cam-health-btn ${connected[c.key] ? "live" : ""} ${activeCamera === c.key ? "active" : ""}`}
+            onClick={() => onOpenCamera(c.key)}
+          >
+            <div>{c.label}</div>
+          </button>
+        ))}
       </div>
-    </>
+    </div>
   );
 }
