@@ -10,7 +10,7 @@
 
 // Pressure transducer scaling
 // Hardware: ratiometric pressure transducers
-// Electrical: 0.5–4.5 V output
+// Electrical: 0.5-4.5 V output
 // Engineering units: PSI
 function scalePressurePsi(voltage, maxPsi) {
   const V_MIN = 0.5;

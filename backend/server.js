@@ -1,4 +1,7 @@
 /**
+ * Author: Aditya Sharma
+ * Rutgers Rocket Propulsion Laboratory
+ *
  * Liquid Rocket Engine Control Backend
  * Node.js side (GUI + state + networking)
  * Hardware handled by Python DAQ service
@@ -8,6 +11,7 @@ const http = require("http");
 const { initWebSocket } = require("./stream/websocket");
 const { engineState } = require("./state/engineState");
 const { startPythonReceiver } = require("./acquisition/pythonReceiver");
+const { startDataLogger } = require("./logging/logger");
 
 const SERVER_PORT = 8080;
 
@@ -19,19 +23,25 @@ function startServer() {
     console.log(`[BACKEND] Server running on port ${SERVER_PORT}`);
   });
 
-  // WebSocket → GUI
+  // WebSocket -> GUI
   initWebSocket(server);
 
-  // TCP server ← Python DAQ
+  // TCP server -> Python DAQ
   startPythonReceiver();
 
+  // CSV data logger
+  const stopLogger = startDataLogger();
+
   // Graceful shutdown
-  process.on("SIGINT", shutdown);
-  process.on("SIGTERM", shutdown);
+  process.on("SIGINT", () => shutdown(stopLogger));
+  process.on("SIGTERM", () => shutdown(stopLogger));
 }
 
-function shutdown() {
+function shutdown(stopLogger) {
   console.log("[BACKEND] Graceful shutdown initiated");
+  if (typeof stopLogger === "function") {
+    stopLogger();
+  }
   process.exit(0);
 }
 

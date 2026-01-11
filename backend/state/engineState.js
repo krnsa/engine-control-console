@@ -1,4 +1,7 @@
 /**
+ * Author: Aditya Sharma
+ * Rutgers Rocket Propulsion Laboratory
+ *
  * Engine state container
  *
  * This object is the single source of truth for the engine
@@ -15,12 +18,36 @@ const engineState = {
     timestamp: null,
 
     pressures: {
-      chamber: null,
-      lox: null
+      pt1: null,
+      pt2: null,
+      pt3: null,
+      pt4: null,
+      pt5: null,
+      pt6: null
     },
 
     thrust: {
-      loadCell: null
+      loadCell1: null
+    },
+
+    weight: {
+      loadCell2: null
+    },
+
+    temperature: {
+      tt1: null
+    },
+
+    sensors: {
+      pt1: null,
+      pt2: null,
+      pt3: null,
+      pt4: null,
+      pt5: null,
+      pt6: null,
+      tt1: null,
+      loadCell1: null,
+      loadCell2: null
     },
 
     valves: {
@@ -30,7 +57,27 @@ const engineState = {
 
     system: {
       daqOnline: false,
-      lastUpdate: null
+      lastUpdate: null,
+      wsClients: 0,
+      cameras: {
+        camera1: false,
+        camera2: false,
+        camera3: false
+      },
+      batteries: {
+        teensy: null,
+        ljt7: null,
+        sensors: {
+          p_bus: null,
+          tc_amp: null,
+          aux: null
+        }
+      },
+      logging: {
+        active: false,
+        filePath: null,
+        lastWrite: null
+      }
     },
 
     faults: []
@@ -39,6 +86,17 @@ const engineState = {
   initialize() {
     this.data.timestamp = Date.now();
     this.data.system.lastUpdate = null;
+    this.data.sensors = {
+      pt1: null,
+      pt2: null,
+      pt3: null,
+      pt4: null,
+      pt5: null,
+      pt6: null,
+      tt1: null,
+      loadCell1: null,
+      loadCell2: null
+    };
     console.log("[STATE] Engine state initialized");
   },
 

@@ -10,16 +10,9 @@
  *  - Post-test data review
  */
 
-const LIMITS = {
-  pressures: {
-    chamber: { min: 0, max: 1200 }, // psi
-    lox: { min: 0, max: 800 }       // psi
-  },
+const { SYSTEM_CONFIG } = require("../config/system.config");
 
-  thrust: {
-    loadCell: { min: -50, max: 5000 } // lbf
-  }
-};
+const LIMITS = SYSTEM_CONFIG.limits;
 
 function checkLimits(state) {
   const faults = [];
@@ -43,6 +36,32 @@ function checkLimits(state) {
     const { min, max } = LIMITS.thrust[key];
     if (value < min || value > max) {
       faults.push(`THRUST_${key.toUpperCase()}_OUT_OF_LIMIT`);
+    }
+  }
+
+  // Weight checks
+  if (LIMITS.weight) {
+    for (const key in LIMITS.weight) {
+      const value = state.weight?.[key];
+      if (value === null || value === undefined) continue;
+
+      const { min, max } = LIMITS.weight[key];
+      if (value < min || value > max) {
+        faults.push(`WEIGHT_${key.toUpperCase()}_OUT_OF_LIMIT`);
+      }
+    }
+  }
+
+  // Temperature checks
+  if (LIMITS.temperature) {
+    for (const key in LIMITS.temperature) {
+      const value = state.temperature?.[key];
+      if (value === null || value === undefined) continue;
+
+      const { min, max } = LIMITS.temperature[key];
+      if (value < min || value > max) {
+        faults.push(`TEMP_${key.toUpperCase()}_OUT_OF_LIMIT`);
+      }
     }
   }
 

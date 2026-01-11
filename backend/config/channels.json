@@ -1,0 +1,67 @@
+{
+  "sensors": [
+    {
+      "id": "pt1",
+      "label": "Nitrous Tank Pressure",
+      "unit": "psi",
+      "type": "pressure",
+      "source": "pressures.pt1"
+    },
+    {
+      "id": "pt2",
+      "label": "IPA Tank Pressure",
+      "unit": "psi",
+      "type": "pressure",
+      "source": "pressures.pt2"
+    },
+    {
+      "id": "pt3",
+      "label": "Oxidizer Feed Pressure",
+      "unit": "psi",
+      "type": "pressure",
+      "source": "pressures.pt3"
+    },
+    {
+      "id": "pt4",
+      "label": "Fuel Pressure (Pre-Film Cooling)",
+      "unit": "psi",
+      "type": "pressure",
+      "source": "pressures.pt4"
+    },
+    {
+      "id": "pt5",
+      "label": "Fuel Pressure (Injector Manifold)",
+      "unit": "psi",
+      "type": "pressure",
+      "source": "pressures.pt5"
+    },
+    {
+      "id": "pt6",
+      "label": "Combustion Chamber Pressure",
+      "unit": "psi",
+      "type": "pressure",
+      "source": "pressures.pt6"
+    },
+    {
+      "id": "tt1",
+      "label": "Engine Throat Temperature",
+      "unit": "F",
+      "type": "temperature",
+      "source": "temperature.tt1"
+    },
+    {
+      "id": "loadCell1",
+      "label": "Thrust Load Cell",
+      "unit": "lbf",
+      "type": "thrust",
+      "source": "thrust.loadCell1"
+    },
+    {
+      "id": "loadCell2",
+      "label": "Nitrous Tank Load Cell",
+      "unit": "lb",
+      "type": "weight",
+      "source": "weight.loadCell2"
+    }
+  ]
+}

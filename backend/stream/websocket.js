@@ -8,6 +8,7 @@ function initWebSocket(server) {
 
   wss.on("connection", (ws) => {
     console.log("[WS] GUI connected");
+    engineState.data.system.wsClients += 1;
 
     const interval = setInterval(() => {
       ws.send(JSON.stringify(engineState.getState()));
@@ -15,6 +16,10 @@ function initWebSocket(server) {
 
     ws.on("close", () => {
       console.log("[WS] GUI disconnected");
+      engineState.data.system.wsClients = Math.max(
+        0,
+        engineState.data.system.wsClients - 1
+      );
       clearInterval(interval);
     });
   });

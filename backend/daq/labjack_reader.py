@@ -13,13 +13,24 @@ NODE_HOST = "127.0.0.1"
 NODE_PORT = 9000
 POLL_RATE = 0.05  # 20 Hz
 
+# Update channel mappings to match final LabJack wiring.
 CHANNELS = {
     "pressures": {
-        "chamber": "AIN0",
-        "lox": "AIN1"
+        "pt1": "AIN0",
+        "pt2": "AIN1",
+        "pt3": "AIN2",
+        "pt4": "AIN3",
+        "pt5": "AIN4",
+        "pt6": "AIN5"
+    },
+    "temperature": {
+        "tt1": "AIN6"
     },
     "thrust": {
-        "loadCell": "AIN2"
+        "loadCell1": "AIN7"
+    },
+    "weight": {
+        "loadCell2": "AIN8"
     },
     "valves": {
         "mainValve": "DIO0",
@@ -48,6 +59,12 @@ def read_channels(handle):
     for k, ch in CHANNELS["thrust"].items():
         data["thrust"][k] = ljm.eReadName(handle, ch)
 
+    for k, ch in CHANNELS["weight"].items():
+        data.setdefault("weight", {})[k] = ljm.eReadName(handle, ch)
+
+    for k, ch in CHANNELS["temperature"].items():
+        data.setdefault("temperature", {})[k] = ljm.eReadName(handle, ch)
+
     for k, ch in CHANNELS["valves"].items():
         val = ljm.eReadName(handle, ch)
         data["valves"][k] = "OPEN" if val == 1 else "CLOSED"
@@ -59,7 +76,13 @@ def main():
     handle = connect_labjack()
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((NODE_HOST, NODE_PORT))
+    while True:
+        try:
+            sock.connect((NODE_HOST, NODE_PORT))
+            break
+        except OSError:
+            print("[DAQ] Waiting for Node backend...")
+            time.sleep(1.0)
     print("[DAQ] Connected to Node backend")
 
     try:
