@@ -3,10 +3,10 @@ import { FaBolt, FaExclamationTriangle, FaWind } from "react-icons/fa";
 
 export default function ControlPanel({ valves = [], onToggle }) {
   const rows = [
-    { name: "Main Propellant Valve", idx: 0 },
-    { name: "Main Propellant Valve", idx: 1 },
-    { name: "Vent Valve", idx: 2 },
-    { name: "Purge/Aux Valve", idx: 3 },
+    { name: "Main Fuel Valve (MFV)", idx: 0 },
+    { name: "Main Oxidizer Valve (MOV)", idx: 1 },
+    { name: "Tank Vent Valve (TVV)", idx: 2 },
+    { name: "Oxidizer Fill Valve (OFV)", idx: 3 },
   ];
 
   const onAbort = () => alert("ABORT sequence sent");

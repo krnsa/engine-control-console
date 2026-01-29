@@ -3,10 +3,10 @@ import React from "react";
 /** Read-only valve state indicator card (compact + aligned) */
 export default function ValvesStatusPanel({ valves = [] }) {
   const rows = [
-    { label: "Main Propellant Valve A", idx: 0 },
-    { label: "Main Propellant Valve B", idx: 1 },
-    { label: "Vent Valve",             idx: 2 },
-    { label: "Purge/Aux Valve",        idx: 3 },
+    { label: "Main Fuel Valve (MFV)", idx: 0 },
+    { label: "Main Oxidizer Valve (MOV)", idx: 1 },
+    { label: "Tank Vent Valve (TVV)", idx: 2 },
+    { label: "Oxidizer Fill Valve (OFV)", idx: 3 },
   ];
 
   return (

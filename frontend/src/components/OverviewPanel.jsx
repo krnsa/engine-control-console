@@ -1,7 +1,7 @@
 // Author: Aditya Sharma
 // Rutgers Rocket Propulsion Laboratory
 
-import React from "react";
+import React, { useState } from "react";
 import SemiGauge from "./SemiGauge";
 import SensorReadout from "./SensorReadout";
 import PidDiagram from "./PidDiagram";
@@ -10,10 +10,21 @@ const PT_CONFIG = [
   { id: "pt1", label: "PT-1 Nitrous Tank", unit: "psi", min: 0, max: 1200, color: "#0ea5e9" },
   { id: "pt2", label: "PT-2 IPA Tank", unit: "psi", min: 0, max: 400, color: "#f97316" },
   { id: "pt3", label: "PT-3 Ox Feed", unit: "psi", min: 0, max: 1200, color: "#22c55e" },
-  { id: "pt4", label: "PT-4 Fuel Pre-Film", unit: "psi", min: 0, max: 600, color: "#eab308" },
+  { id: "pt4", label: "PT-4 Regen Inlet", unit: "psi", min: 0, max: 600, color: "#eab308" },
   { id: "pt5", label: "PT-5 Injector Manifold", unit: "psi", min: 0, max: 500, color: "#9ca3af" },
   { id: "pt6", label: "PT-6 Chamber", unit: "psi", min: 0, max: 1000, color: "#ef4444" }
 ];
+
+const TEMP_UNITS = ["C", "K"];
+const TEMP_MAX_F = 300;
+
+function convertF(valueF, unit) {
+  if (typeof valueF !== "number") return null;
+  const c = (valueF - 32) * (5 / 9);
+  if (unit === "C") return c;
+  if (unit === "K") return c + 273.15;
+  return valueF;
+}
 
 function ValueCard({ title, value, unit }) {
   const text = typeof value === "number" ? value.toFixed(1) : "--";
@@ -28,6 +39,10 @@ function ValueCard({ title, value, unit }) {
 }
 
 export default function OverviewPanel({ state }) {
+  const [tempUnit, setTempUnit] = useState("C");
+  const tt1Value = convertF(state?.sensors?.tt1, tempUnit);
+  const tt1Max = convertF(TEMP_MAX_F, tempUnit);
+
   return (
     <div className="overview-grid">
       <div className="section overview-left no-bg">
@@ -63,9 +78,20 @@ export default function OverviewPanel({ state }) {
             <SensorReadout title="Load Cell 2 (Nitrous Tank)" value={state?.sensors?.loadCell2} unit="lb" max={1000} />
           </div>
 
-          <div className="kicker" style={{ marginTop: 18, marginBottom: 10, textAlign: "center" }}>Thermocouple</div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", maxWidth: 320 }}>
+            <div className="kicker" style={{ marginTop: 18, marginBottom: 10, textAlign: "center" }}>Thermocouple</div>
+            <select
+              value={tempUnit}
+              onChange={(e) => setTempUnit(e.target.value)}
+              style={{ marginTop: 18, marginBottom: 10 }}
+            >
+              {TEMP_UNITS.map((unit) => (
+                <option key={unit} value={unit}>{unit}</option>
+              ))}
+            </select>
+          </div>
           <div style={{ width: "100%", maxWidth: 320 }}>
-            <SensorReadout title="TT-1 Throat Temp" value={state?.sensors?.tt1} unit="F" max={300} />
+            <SensorReadout title="TT-1 Throat Temp" value={tt1Value} unit={tempUnit} max={tt1Max} />
           </div>
         </div>
       </div>

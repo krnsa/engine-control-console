@@ -21,9 +21,9 @@
       "yPercent": 45.2
     },
     {
-      "id": "valve_main",
-      "label": "Main Valve",
-      "sensor": "mainValve",
+      "id": "valve_mfv",
+      "label": "Main Fuel Valve (MFV)",
+      "sensor": "mfv",
       "type": "valve",
       "xPercent": 52.5,
       "yPercent": 60.2

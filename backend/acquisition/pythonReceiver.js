@@ -1,5 +1,5 @@
 /**
- * Author: Aditya Sharma
+ *@ Author: Aditya Sharma
  * Rutgers Rocket Propulsion Laboratory
  *
  * Python DAQ TCP receiver
@@ -63,11 +63,17 @@ function startPythonReceiver() {
           engineState.data.temperature.tt1 =
             typeof parsed.temperature?.tt1 === "number" ? parsed.temperature.tt1 : null;
 
-          engineState.data.valves.mainValve =
-            scaleValveState(parsed.valves?.mainValve);
+          engineState.data.valves.mfv =
+            scaleValveState(parsed.valves?.mfv);
 
-          engineState.data.valves.ventValve =
-            scaleValveState(parsed.valves?.ventValve);
+          engineState.data.valves.mov =
+            scaleValveState(parsed.valves?.mov);
+
+          engineState.data.valves.tvv =
+            scaleValveState(parsed.valves?.tvv);
+
+          engineState.data.valves.ofv =
+            scaleValveState(parsed.valves?.ofv);
 
           engineState.data.timestamp = Date.now();
           engineState.data.system.lastUpdate = Date.now();

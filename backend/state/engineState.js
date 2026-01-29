@@ -51,8 +51,10 @@ const engineState = {
     },
 
     valves: {
-      mainValve: "UNKNOWN",
-      ventValve: "UNKNOWN"
+      mfv: "UNKNOWN",
+      mov: "UNKNOWN",
+      tvv: "UNKNOWN",
+      ofv: "UNKNOWN"
     },
 
     system: {

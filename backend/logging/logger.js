@@ -44,8 +44,10 @@ function buildRow(state) {
     temperature.tt1 ?? "",
     thrust.loadCell1 ?? "",
     weight.loadCell2 ?? "",
-    valves.mainValve ?? "",
-    valves.ventValve ?? "",
+    valves.mfv ?? "",
+    valves.mov ?? "",
+    valves.tvv ?? "",
+    valves.ofv ?? "",
     state.system?.daqOnline ? 1 : 0,
     faults
   ].join(",") + "\n";
@@ -71,8 +73,10 @@ function startDataLogger() {
     "tt1_throat_temp_f",
     "load_cell1_thrust_lbf",
     "load_cell2_tank_lb",
-    "main_valve_state",
-    "vent_valve_state",
+    "main_fuel_valve_mfv_state",
+    "main_oxidizer_valve_mov_state",
+    "tank_vent_valve_tvv_state",
+    "oxidizer_fill_valve_ofv_state",
     "daq_online",
     "faults"
   ].join(",") + "\n";

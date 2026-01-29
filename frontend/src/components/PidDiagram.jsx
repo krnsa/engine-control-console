@@ -70,13 +70,13 @@ export default function PidDiagram({ state }) {
       </g>
 
       <g className="pid-valves">
-        <g className={`pid-valve ${valves.mainValve === "OPEN" ? "open" : valves.mainValve === "CLOSED" ? "closed" : ""}`}>
+        <g className={`pid-valve ${valves.mov === "OPEN" ? "open" : valves.mov === "CLOSED" ? "closed" : ""}`}>
           <rect x="820" y="340" width="26" height="26" />
           <line x1="810" y1="340" x2="856" y2="366" />
           <line x1="810" y1="366" x2="856" y2="340" />
         </g>
 
-        <g className={`pid-valve ${valves.ventValve === "OPEN" ? "open" : valves.ventValve === "CLOSED" ? "closed" : ""}`}>
+        <g className={`pid-valve ${valves.mfv === "OPEN" ? "open" : valves.mfv === "CLOSED" ? "closed" : ""}`}>
           <rect x="600" y="220" width="26" height="26" />
           <line x1="590" y1="220" x2="636" y2="246" />
           <line x1="590" y1="246" x2="636" y2="220" />
@@ -107,7 +107,7 @@ export default function PidDiagram({ state }) {
           <text className="sched-item" x="20" y="59" onMouseEnter={() => setHovered('pt1')} onMouseLeave={() => setHovered(null)}>PT-1: NITROUS TANK PRESSURE</text>
           <text className="sched-item" x="20" y="84" onMouseEnter={() => setHovered('pt2')} onMouseLeave={() => setHovered(null)}>PT-2: IPA TANK PRESSURE</text>
           <text className="sched-item" x="20" y="109" onMouseEnter={() => setHovered('pt3')} onMouseLeave={() => setHovered(null)}>PT-3: OXIDIZER FEED PRESSURE</text>
-          <text className="sched-item" x="20" y="134" onMouseEnter={() => setHovered('pt4')} onMouseLeave={() => setHovered(null)}>PT-4: FUEL PRESSURE (PRE-FILM COOLING)</text>
+          <text className="sched-item" x="20" y="134" onMouseEnter={() => setHovered('pt4')} onMouseLeave={() => setHovered(null)}>PT-4: REGEN INLET PRESSURE</text>
           <text className="sched-item" x="20" y="159" onMouseEnter={() => setHovered('pt5')} onMouseLeave={() => setHovered(null)}>PT-5: FUEL PRESSURE (INJECTOR MANIFOLD)</text>
           <text className="sched-item" x="20" y="184" onMouseEnter={() => setHovered('pt6')} onMouseLeave={() => setHovered(null)}>PT-6: COMBUSTION CHAMBER PRESSURE</text>
           <text className="sched-item" x="20" y="209" onMouseEnter={() => setHovered('tt1')} onMouseLeave={() => setHovered(null)}>TT-1: ENGINE THROAT TEMPERATURE</text>
@@ -156,8 +156,10 @@ export default function PidDiagram({ state }) {
           { label: "TT-1", value: sensors.tt1 },
           { label: "Load Cell 1", value: sensors.loadCell1 },
           { label: "Load Cell 2", value: sensors.loadCell2 },
-          { label: "Main Valve", value: valves.mainValve },
-          { label: "Vent Valve", value: valves.ventValve }
+          { label: "Main Fuel Valve (MFV)", value: valves.mfv },
+          { label: "Main Oxidizer Valve (MOV)", value: valves.mov },
+          { label: "Tank Vent Valve (TVV)", value: valves.tvv },
+          { label: "Oxidizer Fill Valve (OFV)", value: valves.ofv }
         ].map((item) => {
           const isSensor = typeof item.value === "number";
           const hoverKey = hoverMap[item.label];

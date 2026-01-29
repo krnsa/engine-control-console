@@ -23,7 +23,7 @@
     },
     {
       "id": "pt4",
-      "label": "Fuel Pressure (Pre-Film Cooling)",
+      "label": "Regen Inlet Pressure",
       "unit": "psi",
       "type": "pressure",
       "source": "pressures.pt4"

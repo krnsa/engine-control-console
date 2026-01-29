@@ -33,15 +33,17 @@ CHANNELS = {
         "loadCell2": "AIN8"
     },
     "valves": {
-        "mainValve": "DIO0",
-        "ventValve": "DIO1"
+        "ipaMainValve": "DIO0",
+        "nitrousMainValve": "DIO1",
+        "nitrousBleedValve": "DIO2",
+        "nitrousFillValve": "DIO3"
     }
 }
 
 
 def connect_labjack():
-    handle = ljm.openS("T7", "ETHERNET", "ANY")
-    print("[DAQ] LabJack T7 Pro connected via Ethernet")
+    handle = ljm.openS("T7", "USB", "ANY") #Going to change ETHERNET to USB
+    print("[DAQ] LabJack T7 Pro connected via USB") #Going to change ETHERNET to USB
     return handle
 
 
