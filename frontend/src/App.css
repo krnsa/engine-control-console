@@ -219,6 +219,30 @@
 .gauge-label{ font-size:11px; text-transform:uppercase; letter-spacing:.12em; opacity:.85; text-align:center; }
 .gauge-value{ font-size:14px; font-weight:700; }
 
+.temp-unit-select{
+  appearance:none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  border:1px solid rgba(255,255,255,0.12);
+  color:var(--txt-0);
+  border-radius:10px;
+  padding:6px 28px 6px 10px;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+  outline:none;
+}
+.temp-unit-select:hover{
+  border-color:rgba(255,255,255,0.2);
+  background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+}
+.temp-unit-select:focus{
+  box-shadow:0 0 0 2px rgba(124,158,255,0.2);
+  border-color:rgba(124,158,255,0.55);
+}
+
 /* P&ID */
 .pid-wrap{
   position:relative;

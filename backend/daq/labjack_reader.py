@@ -33,10 +33,10 @@ CHANNELS = {
         "loadCell2": "AIN8"
     },
     "valves": {
-        "ipaMainValve": "DIO0",
-        "nitrousMainValve": "DIO1",
-        "nitrousBleedValve": "DIO2",
-        "nitrousFillValve": "DIO3"
+        "mfv": "DIO0",
+        "mov": "DIO1",
+        "tvv": "DIO2",
+        "ofv": "DIO3"
     }
 }
 

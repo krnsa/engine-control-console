@@ -1,6 +1,7 @@
 /**
  * Sensor scaling and normalization layer
- *
+ * Author: Aditya Sharma
+ * Rutgers Rocket Propulsion Laboratory
  * This file converts raw DAQ readings into engineering units.
  * All scaling functions are deterministic and side-effect free.
  *
@@ -8,18 +9,21 @@
  * trigger fault handling upstream.
  */
 
-// Pressure transducer scaling
-// Hardware: ratiometric pressure transducers
-// Electrical: 0.5-4.5 V output
+// Pressure transducer scaling (4-20 mA via shunt resistor)
+// Electrical: 0.996-4.98 V observed across 249 ohm shunt
 // Engineering units: PSI
-function scalePressurePsi(voltage, maxPsi) {
-  const V_MIN = 0.5;
-  const V_MAX = 4.5;
+function scalePressurePsi(voltage, maxPsi, zeroOffsetPsi = 0, spanMa = 16) {
+  const V_MIN = 0.996;
+  const V_MAX = 4.98;
 
   if (typeof voltage !== "number") return null;
   if (voltage < V_MIN || voltage > V_MAX) return null;
 
-  return ((voltage - V_MIN) / (V_MAX - V_MIN)) * maxPsi;
+  const ma = (voltage / 249) * 1000;
+  const psi = ((ma - 4) / spanMa) * maxPsi + zeroOffsetPsi;
+  // Clamp tiny negative values after offset to zero.
+  return psi > 0 ? psi : 0;
+
 }
 
 // Load cell thrust scaling

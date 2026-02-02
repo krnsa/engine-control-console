@@ -20,7 +20,7 @@ const {
 
 const PORT = 9000;
 
-const { pressureMaxPsi, loadCell1LbfPerVolt, loadCell2LbPerVolt } =
+const { pressureMaxPsi, pressureZeroOffsetPsi, pressureSpanMa, loadCell1LbfPerVolt, loadCell2LbPerVolt } =
   SYSTEM_CONFIG.calibration;
 
 function startPythonReceiver() {
@@ -42,17 +42,17 @@ function startPythonReceiver() {
 
           const pressures = parsed.pressures || {};
           engineState.data.pressures.pt1 =
-            scalePressurePsi(pressures.pt1 ?? pressures.lox, pressureMaxPsi.pt1);
+            scalePressurePsi(pressures.pt1 ?? pressures.lox, pressureMaxPsi.pt1, pressureZeroOffsetPsi?.pt1 ?? 0, pressureSpanMa?.pt1 ?? 16);
           engineState.data.pressures.pt2 =
-            scalePressurePsi(pressures.pt2, pressureMaxPsi.pt2);
+            scalePressurePsi(pressures.pt2, pressureMaxPsi.pt2, pressureZeroOffsetPsi?.pt2 ?? 0, pressureSpanMa?.pt2 ?? 16);
           engineState.data.pressures.pt3 =
-            scalePressurePsi(pressures.pt3, pressureMaxPsi.pt3);
+            scalePressurePsi(pressures.pt3, pressureMaxPsi.pt3, pressureZeroOffsetPsi?.pt3 ?? 0, pressureSpanMa?.pt3 ?? 16);
           engineState.data.pressures.pt4 =
-            scalePressurePsi(pressures.pt4, pressureMaxPsi.pt4);
+            scalePressurePsi(pressures.pt4, pressureMaxPsi.pt4, pressureZeroOffsetPsi?.pt4 ?? 0, pressureSpanMa?.pt4 ?? 16);
           engineState.data.pressures.pt5 =
-            scalePressurePsi(pressures.pt5, pressureMaxPsi.pt5);
+            scalePressurePsi(pressures.pt5, pressureMaxPsi.pt5, pressureZeroOffsetPsi?.pt5 ?? 0, pressureSpanMa?.pt5 ?? 16);
           engineState.data.pressures.pt6 =
-            scalePressurePsi(pressures.pt6 ?? pressures.chamber, pressureMaxPsi.pt6);
+            scalePressurePsi(pressures.pt6 ?? pressures.chamber, pressureMaxPsi.pt6, pressureZeroOffsetPsi?.pt6 ?? 0, pressureSpanMa?.pt6 ?? 16);
 
           engineState.data.thrust.loadCell1 =
             scaleThrustLbf(parsed.thrust?.loadCell1 ?? parsed.thrust?.loadCell, loadCell1LbfPerVolt);

@@ -7,12 +7,12 @@ import SensorReadout from "./SensorReadout";
 import PidDiagram from "./PidDiagram";
 
 const PT_CONFIG = [
-  { id: "pt1", label: "PT-1 Nitrous Tank", unit: "psi", min: 0, max: 1200, color: "#0ea5e9" },
-  { id: "pt2", label: "PT-2 IPA Tank", unit: "psi", min: 0, max: 400, color: "#f97316" },
-  { id: "pt3", label: "PT-3 Ox Feed", unit: "psi", min: 0, max: 1200, color: "#22c55e" },
-  { id: "pt4", label: "PT-4 Regen Inlet", unit: "psi", min: 0, max: 600, color: "#eab308" },
-  { id: "pt5", label: "PT-5 Injector Manifold", unit: "psi", min: 0, max: 500, color: "#9ca3af" },
-  { id: "pt6", label: "PT-6 Chamber", unit: "psi", min: 0, max: 1000, color: "#ef4444" }
+  { id: "pt1", label: "PT-1 Nitrous Tank", unit: "psi", min: 0, max: 2000, color: "#0ea5e9" },
+  { id: "pt2", label: "PT-2 IPA Tank", unit: "psi", min: 0, max: 2000, color: "#f97316" },
+  { id: "pt3", label: "PT-3 Ox Feed", unit: "psi", min: 0, max: 2000, color: "#22c55e" },
+  { id: "pt4", label: "PT-4 Regen Inlet", unit: "psi", min: 0, max: 2000, color: "#eab308" },
+  { id: "pt5", label: "PT-5 Injector Manifold", unit: "psi", min: 0, max: 2000, color: "#9ca3af" },
+  { id: "pt6", label: "PT-6 Chamber", unit: "psi", min: 0, max: 2000, color: "#ef4444" }
 ];
 
 const TEMP_UNITS = ["C", "K"];
@@ -81,6 +81,7 @@ export default function OverviewPanel({ state }) {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", maxWidth: 320 }}>
             <div className="kicker" style={{ marginTop: 18, marginBottom: 10, textAlign: "center" }}>Thermocouple</div>
             <select
+              className="temp-unit-select"
               value={tempUnit}
               onChange={(e) => setTempUnit(e.target.value)}
               style={{ marginTop: 18, marginBottom: 10 }}

@@ -86,10 +86,17 @@ export default function GraphsPanel() {
     thrust: [],
     tankPressure: [],
     chamberPressure: [],
-    temperature: []
+    temperature: [],
+    pt1: [],
+    pt2: [],
+    pt3: [],
+    pt4: [],
+    pt5: [],
+    pt6: []
   });
 
   const [modalKey, setModalKey] = useState(null);
+  const [showPtGraphs, setShowPtGraphs] = useState(false);
 
   useEffect(() => {
     connectEngineSocket();
@@ -107,6 +114,12 @@ export default function GraphsPanel() {
       const temp =
         getSensor(state, "tt1") ??
         state?.temperature?.tt1;
+      const pt1 = getSensor(state, "pt1") ?? state?.pressures?.pt1;
+      const pt2 = getSensor(state, "pt2") ?? state?.pressures?.pt2;
+      const pt3 = getSensor(state, "pt3") ?? state?.pressures?.pt3;
+      const pt4 = getSensor(state, "pt4") ?? state?.pressures?.pt4;
+      const pt5 = getSensor(state, "pt5") ?? state?.pressures?.pt5;
+      const pt6 = getSensor(state, "pt6") ?? state?.pressures?.pt6;
 
       setSeries((prev) => {
         const next = { ...prev };
@@ -122,6 +135,24 @@ export default function GraphsPanel() {
         }
         if (typeof temp === "number") {
           next.temperature = [...prev.temperature, { x: ts, y: temp }].slice(-MAX_POINTS);
+        }
+        if (typeof pt1 === "number") {
+          next.pt1 = [...prev.pt1, { x: ts, y: pt1 }].slice(-MAX_POINTS);
+        }
+        if (typeof pt2 === "number") {
+          next.pt2 = [...prev.pt2, { x: ts, y: pt2 }].slice(-MAX_POINTS);
+        }
+        if (typeof pt3 === "number") {
+          next.pt3 = [...prev.pt3, { x: ts, y: pt3 }].slice(-MAX_POINTS);
+        }
+        if (typeof pt4 === "number") {
+          next.pt4 = [...prev.pt4, { x: ts, y: pt4 }].slice(-MAX_POINTS);
+        }
+        if (typeof pt5 === "number") {
+          next.pt5 = [...prev.pt5, { x: ts, y: pt5 }].slice(-MAX_POINTS);
+        }
+        if (typeof pt6 === "number") {
+          next.pt6 = [...prev.pt6, { x: ts, y: pt6 }].slice(-MAX_POINTS);
         }
 
         return next;
@@ -170,10 +201,23 @@ export default function GraphsPanel() {
     { key: "temperature", title: "Temp vs Time", unit: "F", label: "Temperature (F)", points: series.temperature, color: "#22c55e" }
   ];
 
-  const modalTile = tiles.find((t) => t.key === modalKey) || null;
+  const ptTiles = [
+    { key: "pt1", title: "PT-1 vs Time", unit: "psi", label: "PT-1 (psi)", points: series.pt1, color: "#38bdf8" },
+    { key: "pt2", title: "PT-2 vs Time", unit: "psi", label: "PT-2 (psi)", points: series.pt2, color: "#fb923c" },
+    { key: "pt3", title: "PT-3 vs Time", unit: "psi", label: "PT-3 (psi)", points: series.pt3, color: "#4ade80" },
+    { key: "pt4", title: "PT-4 vs Time", unit: "psi", label: "PT-4 (psi)", points: series.pt4, color: "#facc15" },
+    { key: "pt5", title: "PT-5 vs Time", unit: "psi", label: "PT-5 (psi)", points: series.pt5, color: "#a3a3a3" },
+    { key: "pt6", title: "PT-6 vs Time", unit: "psi", label: "PT-6 (psi)", points: series.pt6, color: "#f87171" }
+  ];
+  const modalTile = [...tiles, ...ptTiles].find((t) => t.key === modalKey) || null;
 
   return (
     <div style={{ width: "100%" }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+        <button className="btn" onClick={() => setShowPtGraphs((prev) => !prev)}>
+          {showPtGraphs ? "Hide PT Graphs" : "PT Graphs"}
+        </button>
+      </div>
       <div
         style={{
           display: "grid",
@@ -199,6 +243,35 @@ export default function GraphsPanel() {
           );
         })}
       </div>
+
+      {showPtGraphs && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+            gap: 16,
+            width: "100%",
+            marginTop: 16
+          }}
+        >
+          {ptTiles.map((t) => {
+            const last = t.points.length ? t.points[t.points.length - 1].y : 0;
+            const valueText = Number.isFinite(last) ? last.toFixed(1) : "0.0";
+
+            return (
+              <Tile
+                key={t.key}
+                title={t.title}
+                valueText={valueText}
+                unitText={t.unit}
+                onOpen={() => setModalKey(t.key)}
+              >
+                <Line data={makeData(t.label, t.points, t.color)} options={baseOptions} />
+              </Tile>
+            );
+          })}
+        </div>
+      )}
 
       {modalTile && (
         <LiveChartModal title={modalTile.title} onClose={() => setModalKey(null)}>
