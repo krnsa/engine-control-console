@@ -3,8 +3,7 @@ import React from "react";
 export default function CameraHealth({ connected = {}, onOpenCamera = () => {}, activeCamera = null }) {
   const cams = [
     { key: "camera1", label: "Cam 1" },
-    { key: "camera2", label: "Cam 2" },
-    { key: "camera3", label: "Cam 3" }
+    { key: "camera2", label: "Cam 2" }
   ];
 
   return (

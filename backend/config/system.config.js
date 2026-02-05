@@ -15,11 +15,11 @@ const SYSTEM_CONFIG = {
     },
     pressureZeroOffsetPsi: {
       pt1: 2.127,// S/N 8029012, zero 4.017 mA
-      pt2: -2.003// S/N 8028976, zero 3.984 mA
-      pt3: 5.5,  // S/N 8028939, zero 4.044 mA
-      pt4: -7.5, // S/N 8029080, zero 3.940 mA
-      pt5: -4.0, // S/N 8028945, zero 3.968 mA
-      pt6: -2.5  // S/N 8029051, zero 3.980 mA
+      pt2: -2.003,// S/N 8028976, zero 3.984 mA
+      pt3: 5.502,  // S/N 8028939, zero 4.044 mA
+      pt4: -7.508, // S/N 8029080, zero 3.940 mA
+      pt5: -4.006, // S/N 8028945, zero 3.968 mA
+      pt6: -2.504  // S/N 8029051, zero 3.980 mA
     },
     pressureSpanMa: {
       pt1: 15.981, // S/N 8029012, span mA
@@ -36,7 +36,7 @@ const SYSTEM_CONFIG = {
 
   logging: {
     directory: "./logs",
-    intervalMs: 100
+    intervalMs: 1
   },
 
   limits: {

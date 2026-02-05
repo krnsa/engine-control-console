@@ -34,9 +34,8 @@ export default function ConnectionsPanel({ system = {}, socket = {}, connections
         <div style={{ marginTop: 6, marginBottom: 8 }}>
           <div className="sub-kicker">Cameras</div>
           <div className="conn-stack" style={{ marginTop: 8 }}>
-            <StatusRow label="Camera A" ok={connections.camera1} detail="Live feed" />
-            <StatusRow label="Camera B" ok={connections.camera2} detail="Live feed" />
-            <StatusRow label="Camera C" ok={connections.camera3} detail="Live feed" />
+          <StatusRow label="Camera A" ok={connections.camera1} detail="Live feed" />
+          <StatusRow label="Camera B" ok={connections.camera2} detail="Live feed" />
           </div>
         </div>
 

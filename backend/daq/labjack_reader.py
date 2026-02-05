@@ -30,7 +30,7 @@ CHANNELS = {
         "loadCell1": "AIN7"
     },
     "weight": {
-        "loadCell2": "AIN8"
+        "loadCell2": "AIN12" #Changing AIN8 to AIN12 - for tank load cell... 
     },
     "valves": {
         "mfv": "DIO0",
@@ -42,8 +42,10 @@ CHANNELS = {
 
 
 def connect_labjack():
-    handle = ljm.openS("T7", "USB", "ANY") #Going to change ETHERNET to USB
-    print("[DAQ] LabJack T7 Pro connected via USB") #Going to change ETHERNET to USB
+    handle = ljm.openS("T7", "ETHERNET", "ANY")
+    print("[DAQ] LabJack T7 Pro connected via Ethernet")
+    # handle = ljm.openS("T7", "USB", "ANY")
+    # print("[DAQ] LabJack T7 Pro connected via USB")
     return handle
 
 

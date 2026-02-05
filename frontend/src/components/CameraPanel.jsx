@@ -8,9 +8,8 @@ export default function CameraPanel({
   onCloseCamera = () => {}
 }) {
   const cams = [
-    { key: "camera1", label: "Camera A" },
-    { key: "camera2", label: "Camera B" },
-    { key: "camera3", label: "Camera C" }
+    { key: "camera1", label: "Camera A", streamUrl: "http://localhost:8889/cam1" },
+    { key: "camera2", label: "Camera B", streamUrl: "http://localhost:8889/cam2" }
   ];
 
   const [viewMode, setViewMode] = useState("all"); // "all" | "single"
@@ -32,6 +31,15 @@ export default function CameraPanel({
                   {connected[cam.key] ? "LIVE" : "OFF"}
                 </div>
               </div>
+              {cam.streamUrl ? (
+                <iframe
+                  title={`${cam.label} stream`}
+                  className="feed-embed"
+                  src={cam.streamUrl}
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  referrerPolicy="no-referrer"
+                />
+              ) : null}
             </button>
           ))}
         </div>
@@ -87,6 +95,15 @@ export default function CameraPanel({
                     <div className="feed-label">
                       {cam.label} — {connected[cam.key] ? "LIVE" : "OFF"}
                     </div>
+                    {cam.streamUrl ? (
+                      <iframe
+                        title={`${cam.label} stream`}
+                        className="feed-embed"
+                        src={cam.streamUrl}
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : null}
                   </div>
                 );
               })}

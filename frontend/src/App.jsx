@@ -64,8 +64,7 @@ export default function App() {
 
   const connections = {
     camera1: !!engineState?.system?.cameras?.camera1,
-    camera2: !!engineState?.system?.cameras?.camera2,
-    camera3: !!engineState?.system?.cameras?.camera3
+    camera2: !!engineState?.system?.cameras?.camera2
   };
 
   return (
@@ -88,8 +87,7 @@ export default function App() {
               sensors: !!engineState?.system?.daqOnline,
               labjack: !!engineState?.system?.daqOnline,
               camera1: connections.camera1,
-              camera2: connections.camera2,
-              camera3: connections.camera3
+              camera2: connections.camera2
             }}
           />
         )}

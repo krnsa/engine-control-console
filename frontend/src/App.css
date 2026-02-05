@@ -506,13 +506,14 @@
 /* ===== CAMERAS (COLLAPSED) ===== */
 .cams-large {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
+  justify-content: center;
 }
 
 .cam-large {
   position: relative;
-  height: 420px;
+  height: 520px;
   border-radius: 14px;
   background: linear-gradient(180deg, #0b111a, #070c12);
   border: 1px solid rgba(255,255,255,0.06);
@@ -576,7 +577,7 @@
 }
 
 .camera-modal-grid.all {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .camera-modal-grid.single {
@@ -592,6 +593,15 @@
   align-items: center;
   justify-content: center;
   position: relative;
+}
+
+.feed-embed{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
+  border-radius:14px;
 }
 
 .feed-active {

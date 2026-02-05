@@ -137,22 +137,22 @@ export default function GraphsPanel() {
           next.temperature = [...prev.temperature, { x: ts, y: temp }].slice(-MAX_POINTS);
         }
         if (typeof pt1 === "number") {
-          next.pt1 = [...prev.pt1, { x: ts, y: pt1 }].slice(-MAX_POINTS);
+          next.pt1 = keepFirstPoint(prev.pt1, { x: ts, y: pt1 });
         }
         if (typeof pt2 === "number") {
-          next.pt2 = [...prev.pt2, { x: ts, y: pt2 }].slice(-MAX_POINTS);
+          next.pt2 = keepFirstPoint(prev.pt2, { x: ts, y: pt2 });
         }
         if (typeof pt3 === "number") {
-          next.pt3 = [...prev.pt3, { x: ts, y: pt3 }].slice(-MAX_POINTS);
+          next.pt3 = keepFirstPoint(prev.pt3, { x: ts, y: pt3 });
         }
         if (typeof pt4 === "number") {
-          next.pt4 = [...prev.pt4, { x: ts, y: pt4 }].slice(-MAX_POINTS);
+          next.pt4 = keepFirstPoint(prev.pt4, { x: ts, y: pt4 });
         }
         if (typeof pt5 === "number") {
-          next.pt5 = [...prev.pt5, { x: ts, y: pt5 }].slice(-MAX_POINTS);
+          next.pt5 = keepFirstPoint(prev.pt5, { x: ts, y: pt5 });
         }
         if (typeof pt6 === "number") {
-          next.pt6 = [...prev.pt6, { x: ts, y: pt6 }].slice(-MAX_POINTS);
+          next.pt6 = keepFirstPoint(prev.pt6, { x: ts, y: pt6 });
         }
 
         return next;
@@ -178,6 +178,31 @@ export default function GraphsPanel() {
       }
     };
   }, []);
+
+  function keepFirstPoint(points, nextPoint) {
+    const updated = [...points, nextPoint];
+    if (updated.length <= MAX_POINTS) return updated;
+    return [updated[0], ...updated.slice(-(MAX_POINTS - 1))];
+  }
+
+  function getMaxWithPadding(points, padding = 100) {
+    if (!points.length) return 2000;                  // max padding is now the max recorded on the pts 
+    let max = points[0].y;
+    for (let i = 1; i < points.length; i += 1) {     // y - axis scaling should work now 
+      if (points[i].y > max) max = points[i].y;
+    }
+    return Math.max(0, max + padding);
+  }
+
+  function makePtOptions(points) { // so this should auto-scale y-axis - unless test with the data points
+    return {                       // and go back to v4 for the testing end of the project
+      ...baseOptions,
+      scales: {                    // scaling should be working respectively 
+        ...baseOptions.scales,
+        y: { beginAtZero: true, min: 0, max: getMaxWithPadding(points) }
+      }
+    };
+  }
 
   function makeData(label, points, color) {
     return {
@@ -266,7 +291,7 @@ export default function GraphsPanel() {
                 unitText={t.unit}
                 onOpen={() => setModalKey(t.key)}
               >
-                <Line data={makeData(t.label, t.points, t.color)} options={baseOptions} />
+                <Line data={makeData(t.label, t.points, t.color)} options={makePtOptions(t.points)} />
               </Tile>
             );
           })}
@@ -276,7 +301,10 @@ export default function GraphsPanel() {
       {modalTile && (
         <LiveChartModal title={modalTile.title} onClose={() => setModalKey(null)}>
           <div style={{ height: "100%", width: "100%" }}>
-            <Line data={makeData(modalTile.label, modalTile.points, modalTile.color)} options={baseOptions} />
+            <Line
+              data={makeData(modalTile.label, modalTile.points, modalTile.color)}
+              options={modalTile.key.startsWith("pt") ? makePtOptions(modalTile.points) : baseOptions}
+            />
           </div>
         </LiveChartModal>
       )}
