@@ -17,11 +17,12 @@ POLL_RATE = 0.05  # 20 Hz
 CHANNELS = {
     "pressures": {
         "pt1": "AIN0",
-        "pt2": "AIN1",
+        "pt2": "AIN1", #MFV Pressure Transducer - AIN1 - DIO0
         "pt3": "AIN2",
         "pt4": "AIN3",
         "pt5": "AIN4",
         "pt6": "AIN5"
+
     },
     "temperature": {
         "tt1": "AIN6"
@@ -37,6 +38,12 @@ CHANNELS = {
         "mov": "DIO1",
         "tvv": "DIO2",
         "ofv": "DIO3"
+    },
+    "spares": {
+        "spare1": "DIO7", 
+        "spare2": "DIO6", 
+        "spare3": "DIO5",
+        "spare4": "DIO4"
     }
 }
 
@@ -70,8 +77,11 @@ def read_channels(handle):
         data.setdefault("temperature", {})[k] = ljm.eReadName(handle, ch)
 
     for k, ch in CHANNELS["valves"].items():
-        val = ljm.eReadName(handle, ch)
-        data["valves"][k] = "OPEN" if val == 1 else "CLOSED"
+        state_val = ljm.eReadName(handle, ch)
+        data["valves"][k] = "OPEN" if state_val == 1 else "CLOSED"
+
+    for k, ch in CHANNELS["spares"].items():
+        data.setdefault("spares", {})[k] = ljm.eReadName(handle, ch)
 
     return data
 
