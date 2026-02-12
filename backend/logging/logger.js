@@ -52,6 +52,11 @@ function buildRow(state) {
     faults
   ].join(",") + "\n";
 }
+// Need to write logic for showing the arduino - serial monitor - directly on GUI 
+// Logic is simple - Labjack T7 pro - can read serial which I can then use via websockets same thing - 
+// write into the state and then show it on the gui
+
+
 
 function startDataLogger() {
   const { directory, intervalMs } = SYSTEM_CONFIG.logging;

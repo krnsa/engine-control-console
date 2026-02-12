@@ -11,6 +11,7 @@ const http = require("http");
 const { initWebSocket } = require("./stream/websocket");
 const { engineState } = require("./state/engineState");
 const { startPythonReceiver } = require("./acquisition/pythonReceiver");
+const { startArduinoSerial } = require("./acquisition/arduinoSerial");
 const { startDataLogger } = require("./logging/logger");
 
 const SERVER_PORT = 8080;
@@ -28,6 +29,9 @@ function startServer() {
 
   // TCP server -> Python DAQ
   startPythonReceiver();
+
+  // Arduino serial -> event stream
+  startArduinoSerial();
 
   // CSV data logger
   const stopLogger = startDataLogger();

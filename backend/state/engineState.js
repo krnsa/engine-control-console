@@ -75,11 +75,18 @@ const engineState = {
           aux: null
         }
       },
+      spares: {
+        spare1: null,
+        spare2: null,
+        spare3: null,
+        spare4: null
+      },
       logging: {
         active: false,
         filePath: null,
         lastWrite: null
-      }
+      },
+      eventStream: []
     },
 
     faults: []
@@ -88,6 +95,7 @@ const engineState = {
   initialize() {
     this.data.timestamp = Date.now();
     this.data.system.lastUpdate = null;
+    this.data.system.eventStream = [];
     this.data.sensors = {
       pt1: null,
       pt2: null,
@@ -111,6 +119,21 @@ const engineState = {
 
   getState() {
     return this.data;
+  },
+
+  addEvent({ message, level = "info", source = "system", fields = null, max = 200 }) {
+    if (!message) return;
+    const entry = {
+      ts: Date.now(),
+      level,
+      source,
+      message,
+      fields
+    };
+    this.data.system.eventStream.push(entry);
+    if (this.data.system.eventStream.length > max) {
+      this.data.system.eventStream.splice(0, this.data.system.eventStream.length - max);
+    }
   }
 };
 

@@ -25,13 +25,16 @@ CHANNELS = {
 
     },
     "temperature": {
-        "tt1": "AIN6"
+        "tt1": "AIN8"    #AIN 8 is now the thermocouple 
     },
     "thrust": {
-        "loadCell1": "AIN7"
+        "loadCell1": "AIN7" # AIN7 is now the main load cell 
     },
     "weight": {
-        "loadCell2": "AIN12" #Changing AIN8 to AIN12 - for tank load cell... 
+        "loadCell2": "AIN6" #Changing AIN8 to AIN12 - for tank load cell...   now chainging 12 to 6
+
+        # Changing AIN8 - AIN6 - for tank load cell...  now changing 6 to 8 - because of the thermocouple
+        # Changing AIn 6 - AIN
     },
     "valves": {
         "mfv": "DIO0",

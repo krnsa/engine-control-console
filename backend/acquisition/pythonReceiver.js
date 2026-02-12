@@ -15,13 +15,38 @@ const { SYSTEM_CONFIG } = require("../config/system.config");
 const {
   scalePressurePsi,
   scaleThrustLbf,
+  scaleCurrentLoopLb,
   scaleValveState
 } = require("./scaling");
 
 const PORT = 9000;
 
-const { pressureMaxPsi, pressureZeroOffsetPsi, pressureSpanMa, loadCell1LbfPerVolt, loadCell2LbPerVolt } =
+const {
+  pressureMaxPsi,
+  pressureZeroOffsetPsi,
+  pressureSpanMa,
+  pressureDeadbandPsi, // Pressure Deadband 
+  loadCell1LbfPerVolt,
+  loadCell1MaxLb,
+  loadCell1ZeroOffsetLb,
+  loadCell2MaxLb,
+  loadCell2ZeroOffsetLb
+} =
   SYSTEM_CONFIG.calibration;
+
+const SMOOTHING_ALPHA = SYSTEM_CONFIG.smoothing?.alpha ?? 0.1; // changing 0.2 smooth to 0.1 smooth
+const smoothingState = {};
+
+function smoothValue(key, value) {
+  if (typeof value !== "number") return null;
+  const prev = smoothingState[key];
+  const next = typeof prev === "number"
+
+    ? (SMOOTHING_ALPHA * value) + ((1 - SMOOTHING_ALPHA) * prev)
+    : value;
+  smoothingState[key] = next;
+  return next;
+}
 
 function startPythonReceiver() {
   const server = net.createServer((socket) => {
@@ -42,26 +67,26 @@ function startPythonReceiver() {
 
           const pressures = parsed.pressures || {};
           engineState.data.pressures.pt1 =
-            scalePressurePsi(pressures.pt1 ?? pressures.lox, pressureMaxPsi.pt1, pressureZeroOffsetPsi?.pt1 ?? 0, pressureSpanMa?.pt1 ?? 16);
+            smoothValue("pt1", scalePressurePsi(pressures.pt1 ?? pressures.lox, pressureMaxPsi.pt1, pressureZeroOffsetPsi?.pt1 ?? 0, pressureSpanMa?.pt1 ?? 16, pressureDeadbandPsi ?? 0));
           engineState.data.pressures.pt2 =
-            scalePressurePsi(pressures.pt2, pressureMaxPsi.pt2, pressureZeroOffsetPsi?.pt2 ?? 0, pressureSpanMa?.pt2 ?? 16);
+            smoothValue("pt2", scalePressurePsi(pressures.pt2, pressureMaxPsi.pt2, pressureZeroOffsetPsi?.pt2 ?? 0, pressureSpanMa?.pt2 ?? 16, pressureDeadbandPsi ?? 0));
           engineState.data.pressures.pt3 =
-            scalePressurePsi(pressures.pt3, pressureMaxPsi.pt3, pressureZeroOffsetPsi?.pt3 ?? 0, pressureSpanMa?.pt3 ?? 16);
+            smoothValue("pt3", scalePressurePsi(pressures.pt3, pressureMaxPsi.pt3, pressureZeroOffsetPsi?.pt3 ?? 0, pressureSpanMa?.pt3 ?? 16, pressureDeadbandPsi ?? 0));
           engineState.data.pressures.pt4 =
-            scalePressurePsi(pressures.pt4, pressureMaxPsi.pt4, pressureZeroOffsetPsi?.pt4 ?? 0, pressureSpanMa?.pt4 ?? 16);
+            smoothValue("pt4", scalePressurePsi(pressures.pt4, pressureMaxPsi.pt4, pressureZeroOffsetPsi?.pt4 ?? 0, pressureSpanMa?.pt4 ?? 16, pressureDeadbandPsi ?? 0));
           engineState.data.pressures.pt5 =
-            scalePressurePsi(pressures.pt5, pressureMaxPsi.pt5, pressureZeroOffsetPsi?.pt5 ?? 0, pressureSpanMa?.pt5 ?? 16);
+            smoothValue("pt5", scalePressurePsi(pressures.pt5, pressureMaxPsi.pt5, pressureZeroOffsetPsi?.pt5 ?? 0, pressureSpanMa?.pt5 ?? 16, pressureDeadbandPsi ?? 0));
           engineState.data.pressures.pt6 =
-            scalePressurePsi(pressures.pt6 ?? pressures.chamber, pressureMaxPsi.pt6, pressureZeroOffsetPsi?.pt6 ?? 0, pressureSpanMa?.pt6 ?? 16);
+            smoothValue("pt6", scalePressurePsi(pressures.pt6 ?? pressures.chamber, pressureMaxPsi.pt6, pressureZeroOffsetPsi?.pt6 ?? 0, pressureSpanMa?.pt6 ?? 16, pressureDeadbandPsi ?? 0));
 
           engineState.data.thrust.loadCell1 =
-            scaleThrustLbf(parsed.thrust?.loadCell1 ?? parsed.thrust?.loadCell, loadCell1LbfPerVolt);
+            smoothValue("loadCell1", scaleCurrentLoopLb(parsed.thrust?.loadCell1 ?? parsed.thrust?.loadCell, loadCell1MaxLb, loadCell1ZeroOffsetLb ?? 0));
 
           engineState.data.weight.loadCell2 =
-            scaleThrustLbf(parsed.weight?.loadCell2, loadCell2LbPerVolt);
+            smoothValue("loadCell2", scaleCurrentLoopLb(parsed.weight?.loadCell2, loadCell2MaxLb, loadCell2ZeroOffsetLb ?? 0));
 
           engineState.data.temperature.tt1 =
-            typeof parsed.temperature?.tt1 === "number" ? parsed.temperature.tt1 : null;
+            smoothValue("tt1", typeof parsed.temperature?.tt1 === "number" ? parsed.temperature.tt1 : null);
 
           engineState.data.valves.mfv =
             scaleValveState(parsed.valves?.mfv);
@@ -95,6 +120,14 @@ function startPythonReceiver() {
             const next = parsed.cameras || parsed.system?.cameras;
             engineState.data.system.cameras = {
               ...engineState.data.system.cameras,
+              ...next
+            };
+          }
+
+          if (parsed.spares || parsed.system?.spares) {
+            const next = parsed.spares || parsed.system?.spares;
+            engineState.data.system.spares = {
+              ...engineState.data.system.spares,
               ...next
             };
           }
