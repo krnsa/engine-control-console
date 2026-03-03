@@ -81,10 +81,53 @@ const engineState = {
         spare3: null,
         spare4: null
       },
+      sequence: {
+        online: false,
+        source: "none",
+        code: null,
+        name: "--",
+        timeInStateSec: null,
+        plcTimerSec: null,
+        lastRead: null
+      },
+      tank: {
+        source: "none",
+        tareWeightLbf: null,
+        fullWeightLbf: null,
+        fluidWeightLbf: null,
+        fluidMaxLbf: null,
+        lastRead: null
+      },
+      ignitors: {
+        source: "none",
+        ignitor1Connected: null,
+        ignitor2Connected: null,
+        lastRead: null
+      },
+      cutdown: {
+        mode: "SAFE",
+        armed: false,
+        command: "IDLE",
+        continuity: null,
+        lastUpdate: null
+      },
       logging: {
         active: false,
         filePath: null,
-        lastWrite: null
+        lastWrite: null,
+        csv: {
+          ok: false,
+          active: false,
+          filePath: null,
+          lastWrite: null
+        },
+        video: {
+          ok: false,
+          directory: null,
+          latestFile: null,
+          latestWrite: null,
+          reason: "NOT_CONFIGURED"
+        }
       },
       eventStream: []
     },
@@ -96,6 +139,36 @@ const engineState = {
     this.data.timestamp = Date.now();
     this.data.system.lastUpdate = null;
     this.data.system.eventStream = [];
+    this.data.system.sequence = {
+      online: false,
+      source: "none",
+      code: null,
+      name: "--",
+      timeInStateSec: null,
+      plcTimerSec: null,
+      lastRead: null
+    };
+    this.data.system.tank = {
+      source: "none",
+      tareWeightLbf: null,
+      fullWeightLbf: null,
+      fluidWeightLbf: null,
+      fluidMaxLbf: null,
+      lastRead: null
+    };
+    this.data.system.ignitors = {
+      source: "none",
+      ignitor1Connected: null,
+      ignitor2Connected: null,
+      lastRead: null
+    };
+    this.data.system.cutdown = {
+      mode: "SAFE",
+      armed: false,
+      command: "IDLE",
+      continuity: null,
+      lastUpdate: null
+    };
     this.data.sensors = {
       pt1: null,
       pt2: null,
