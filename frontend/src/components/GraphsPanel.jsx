@@ -227,12 +227,12 @@ export default function GraphsPanel() {
   ];
 
   const ptTiles = [
-    { key: "pt1", title: "PT-1 vs Time", unit: "psi", label: "PT-1 (psi)", points: series.pt1, color: "#38bdf8" },
-    { key: "pt2", title: "PT-2 vs Time", unit: "psi", label: "PT-2 (psi)", points: series.pt2, color: "#fb923c" },
-    { key: "pt3", title: "PT-3 vs Time", unit: "psi", label: "PT-3 (psi)", points: series.pt3, color: "#4ade80" },
-    { key: "pt4", title: "PT-4 vs Time", unit: "psi", label: "PT-4 (psi)", points: series.pt4, color: "#facc15" },
-    { key: "pt5", title: "PT-5 vs Time", unit: "psi", label: "PT-5 (psi)", points: series.pt5, color: "#a3a3a3" },
-    { key: "pt6", title: "PT-6 vs Time", unit: "psi", label: "PT-6 (psi)", points: series.pt6, color: "#f87171" }
+    { key: "pt1", title: "PT-1 Ox Feed vs Time", unit: "psi", label: "PT-1 Ox Feed (psi)", points: series.pt1, color: "#38bdf8" },
+    { key: "pt2", title: "PT-2 IPA Tank vs Time", unit: "psi", label: "PT-2 IPA Tank (psi)", points: series.pt2, color: "#fb923c" },
+    { key: "pt3", title: "PT-3 Ox Feed vs Time", unit: "psi", label: "PT-3 Ox Feed (psi)", points: series.pt3, color: "#4ade80" },
+    { key: "pt4", title: "PT-4 Regen Inlet vs Time", unit: "psi", label: "PT-4 Regen Inlet (psi)", points: series.pt4, color: "#facc15" },
+    { key: "pt5", title: "PT-5 Injector Manifold vs Time", unit: "psi", label: "PT-5 Injector Manifold (psi)", points: series.pt5, color: "#a3a3a3" },
+    { key: "pt6", title: "PT-6 Nitrous Tank vs Time", unit: "psi", label: "PT-6 Nitrous Tank (psi)", points: series.pt6, color: "#f87171" }
   ];
   const modalTile = [...tiles, ...ptTiles].find((t) => t.key === modalKey) || null;
 

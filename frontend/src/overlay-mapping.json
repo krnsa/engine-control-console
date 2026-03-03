@@ -30,3 +30,48 @@
     }
   ]
 }
+
+
+
+id : "valve_mfv",
+label : "Main Fuel Valve (MFV)",
+sensor : "mfv",
+type : "valve",
+xPercent : 52.5,
+yPercent : 60.2
+
+
+id : "p_chamber",
+label : "Chamber Pressure",
+sensor : "chamberPressure",
+type : "pressure",
+xPercent : 42.5,
+yPercent : 28.3
+
+id : "p_lox",
+label : "LOX Pressure",
+sensor : "tankPressure",
+type : "pressure",
+xPercent : 62.1,
+yPercent : 45.2
+
+id : "valve_mfv",
+label : "Main Fuel Valve (MFV)",
+sensor: "mfv",
+type : "valve",
+xPercent : 52.5,
+yPercent : 60.2
+
+id : "p_chamber",
+label : "Chamber Pressure",
+sensor : "chamberPressure",
+type : "pressure",
+xPercent : 42.5,
+yPercent : 32.3
+
+id : "p_lox",
+label : "LOX Pressure",
+sensor : "tankPressure",
+type :"pressure",
+xPercent : 62.1,
+yPercent : 45.2
