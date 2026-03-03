@@ -42,12 +42,10 @@ CHANNELS = {
         "tvv": "DIO2",
         "ofv": "DIO3"
     },
-    "spares": {
-        "spare1": "DIO7", 
-        "spare2": "DIO6", 
-        "spare3": "DIO5",
-        "spare4": "DIO4"
-    }
+    # NOTE: DIO4-DIO7 share physical lines with AIN4-AIN7 on T7.
+    # Since PT5/PT6/loadCell2/loadCell1 use AIN4-AIN7, do not read DIO4-DIO7
+    # as digital spares at the same time.
+    "spares": {}
 }
 
 

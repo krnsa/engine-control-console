@@ -13,6 +13,7 @@ const { engineState } = require("./state/engineState");
 const { startPythonReceiver } = require("./acquisition/pythonReceiver");
 const { startArduinoSerial } = require("./acquisition/arduinoSerial");
 const { startDataLogger } = require("./logging/logger");
+const { startPlcSequencePoller } = require("./acquisition/plcSequencePoller");
 
 const SERVER_PORT = 8080;
 
@@ -35,22 +36,25 @@ function startServer() {
 
   // CSV data logger
   const stopLogger = startDataLogger();
+  const stopPlcPoller = startPlcSequencePoller();
 
   // Graceful shutdown
-  process.on("SIGINT", () => shutdown(stopLogger));
-  process.on("SIGTERM", () => shutdown(stopLogger));
+  process.on("SIGINT", () => shutdown({ stopLogger, stopPlcPoller }));
+  process.on("SIGTERM", () => shutdown({ stopLogger, stopPlcPoller }));
 }
 
-function shutdown(stopLogger) {
+function shutdown({ stopLogger, stopPlcPoller }) {
   console.log("[BACKEND] Graceful shutdown initiated");
   if (typeof stopLogger === "function") {
     stopLogger();
   }
+  if (typeof stopPlcPoller === "function") {
+    stopPlcPoller();
+  }
   process.exit(0);
 }
 
-// Initialize engine state
 engineState.initialize();
 
-// Start backend
+
 startServer();

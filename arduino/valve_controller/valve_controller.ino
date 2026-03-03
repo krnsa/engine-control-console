@@ -3,7 +3,8 @@
 
 const int NUM_VALVES = 4;
 const int TOGGLE_TICKS = 5;     // debounce threshold - Needs to go 5 times in a counter
-const int SERVO_OPEN_ANGLE = 95; // angle is fixed to open - 95 - Ravi Check  
+const int SERVO_OPEN_ANGLE = 95; // default open angle
+const int SERVO4_OPEN_ANGLE = 45; // servo 4 test angle to reduce vibration
 const int SERVO_CLOSED_ANGLE = 0;   // angle is fixed to close
 
 /********* PLC command inputs  *************/
@@ -88,13 +89,15 @@ void handleValve(int i) { // The Function
     Serial.print(" -> ");
     Serial.print(valveState[i] ? "OPEN" : "CLOSED");
     Serial.print(" (angle=");
-    Serial.print(valveState[i] ? SERVO_OPEN_ANGLE : SERVO_CLOSED_ANGLE);
+    const int openAngle = (i == 3) ? SERVO4_OPEN_ANGLE : SERVO_OPEN_ANGLE; // i==3 is Valve/Servo 4
+    Serial.print(valveState[i] ? openAngle : SERVO_CLOSED_ANGLE);
     Serial.println(")");
   }
 
   // Drive Servo  
   if (valveState[i]) {
-    valves[i].write(SERVO_OPEN_ANGLE);
+    const int openAngle = (i == 3) ? SERVO4_OPEN_ANGLE : SERVO_OPEN_ANGLE; // i==3 is Valve/Servo 4
+    valves[i].write(openAngle);
   } else {
     valves[i].write(SERVO_CLOSED_ANGLE);
   }

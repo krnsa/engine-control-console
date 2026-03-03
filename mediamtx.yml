@@ -3,11 +3,12 @@ webrtcAddress: :8889
 webrtcEncryption: no
 webrtcAllowOrigins: ['*']
 
-# record: yes
-# recordFormat: fmp4
-# recordPath: E:/Recordings/%path/%Y-%m-%d_%H-%M-%S
-# recordPartDuration: 1s
-# recordSegmentDuration: 5m
+pathDefaults:
+  record: yes
+  recordFormat: fmp4
+  recordPath: D:/Recordings/%path/%Y-%m-%d_%H-%M-%S
+  recordPartDuration: 1s
+  recordSegmentDuration: 5m
 
 paths:
   cam1:
