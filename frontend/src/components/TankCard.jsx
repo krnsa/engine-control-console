@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useRef } from "react";
 import TankGaugeCanvas from "./TankGaugeCanvas";
 
 function clamp(v, min, max) {
@@ -43,8 +43,6 @@ export default function TankCard({
   const scaleTicks = [dynamicGaugeMax, dynamicGaugeMax * 0.75, dynamicGaugeMax * 0.5, dynamicGaugeMax * 0.25, gaugeMinLbf]
     .map((v) => Math.round(v));
 
-  const trend = useMemo(() => (hasFluidReading ? "LIVE" : "--"), [hasFluidReading]);
-
   return (
     <div className="tankCardWrap">
       <div className="tankCardHead">
@@ -80,11 +78,6 @@ export default function TankCard({
           <div className="statBox">
             <div className="t">Fluid</div>
             <div className="v blue">{hasFluidReading ? fluidWeight.toFixed(2) : "--"} LBF</div>
-          </div>
-
-          <div className="statBox">
-            <div className="t">Trend</div>
-            <div className="v">{trend}</div>
           </div>
 
           <div className="statBox">

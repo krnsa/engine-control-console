@@ -52,7 +52,7 @@ export default function SemiGauge({
         {/* Track */}
         <path
           d={`M ${startX} ${startY} A ${r} ${r} 0 0 1 ${endX} ${endY}`}
-          stroke="rgba(255,255,255,0.12)"
+          stroke="var(--track-bg)"
           strokeWidth="8"
           fill="none"
           strokeLinecap="round"
@@ -84,7 +84,7 @@ export default function SemiGauge({
           x={cx}
           y={cy - 6}
           textAnchor="middle"
-          fill="#ffffff"
+          fill="var(--ink-strong)"
           fontSize="20"
           fontWeight="700"
         >
@@ -94,7 +94,7 @@ export default function SemiGauge({
           x={cx}
           y={cy + 14}
           textAnchor="middle"
-          fill="rgba(255,255,255,0.6)"
+          fill="var(--ink-soft)"
           fontSize="11"
         >
           {unit}

@@ -17,6 +17,7 @@ import SensorReadout from "./SensorReadout";
 import PidDiagram from "./PidDiagram";
 import TankCard from "./TankCard";
 import ThermocoupleSelectedPanel from "./ThermocoupleSelectedPanel";
+import LiveChartModal from "./LiveChartModal";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
 
@@ -32,6 +33,7 @@ const PT_CONFIG = [
 const TANK_GAUGE_MIN_LBF = 0;
 const TANK_GAUGE_MAX_LBF = 100;
 const MAX_TREND_POINTS = 160;
+const TT1_LIMIT_C = (620 - 32) * (5 / 9);
 const SEQUENCE_STATES = [
   { code: 0, name: "Manual Control" },
   { code: 100, name: "Default State" },
@@ -57,6 +59,7 @@ const SIGNAL_META = {
   loadCell1: { title: "Load Cell 1", unit: "lbf", source: "AIN7", kind: "analog", color: "#f97316" },
   loadCell2: { title: "Load Cell 2", unit: "lbf", source: "AIN6", kind: "analog", color: "#60a5fa" },
   loadCell2Tare: { title: "Load Cell 2 Tare", unit: "lbf", source: "PLC REG 1", kind: "analog", color: "#93c5fd" },
+  tankMassFlow: { title: "Tank Mass Flow", unit: "lbm/s", source: "DERIVED", kind: "analog", color: "#06b6d4" },
   tt1: { title: "TT-1", unit: "F", source: "AIN8", kind: "analog", color: "#22c55e" },
   mfv: { title: "Main Fuel Valve", unit: "", source: "DIO0", kind: "digital", color: "#34d399" },
   mov: { title: "Main Oxidizer Valve", unit: "", source: "DIO1", kind: "digital", color: "#34d399" },
@@ -75,6 +78,7 @@ function getSignalValue(state, key) {
   const tank = state?.system?.tank || {};
 
   if (key === "loadCell2Tare") return typeof tank.tareWeightLbf === "number" ? tank.tareWeightLbf : null;
+  if (key === "tankMassFlow") return typeof tank.massFlowLbmPerSec === "number" ? tank.massFlowLbmPerSec : null;
   if (key === "mfv" || key === "mov" || key === "tvv" || key === "ofv") {
     if (valves[key] === "OPEN") return 1;
     if (valves[key] === "CLOSED") return 0;
@@ -99,6 +103,7 @@ export default function OverviewPanel({ state, ignitorStatus }) {
   const sequenceOnline = Boolean(sequence.online);
   const activeIdx = SEQUENCE_STATES.findIndex((s) => s.code === sequenceCode);
   const [selectedSignal, setSelectedSignal] = useState("pt1");
+  const [trendModalOpen, setTrendModalOpen] = useState(false);
   const [trendSeries, setTrendSeries] = useState(() => {
     const init = {};
     Object.keys(SIGNAL_META).forEach((key) => {
@@ -139,8 +144,8 @@ export default function OverviewPanel({ state, ignitorStatus }) {
         {
           label: `${selectedMeta.title}${selectedMeta.unit ? ` (${selectedMeta.unit})` : ""}`,
           data: selectedPoints.map((point) => point?.value ?? null),
-          borderColor: selectedMeta.color,
-          backgroundColor: selectedMeta.color,
+          borderColor: selectedMeta.color,               
+          backgroundColor: selectedMeta.color,  
           borderWidth: 2,
           pointRadius: 0,
           pointHoverRadius: 4,
@@ -199,7 +204,57 @@ export default function OverviewPanel({ state, ignitorStatus }) {
     }),
     [selectedMeta]
   );
-
+  const trendModalChartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      interaction: {
+        mode: "index",
+        intersect: false
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            title: (items) => {
+              if (!items.length) return "";
+              return `${items[0].label}`;
+            },
+            label: (ctx) => {
+              const y = typeof ctx.parsed.y === "number" ? ctx.parsed.y : null;
+              if (y === null) return "--";
+              const decimals = selectedMeta.unit === "psi" ? 3 : 2;
+              return `${y.toFixed(decimals)}${selectedMeta.unit ? ` ${selectedMeta.unit}` : ""}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: "rgba(226,232,240,0.75)",
+            maxRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: 8
+          },
+          grid: {
+            color: "rgba(148,163,184,0.10)"
+          }
+        },
+        y: {
+          ticks: {
+            color: "rgba(226,232,240,0.75)"
+          },
+          grid: {
+            color: "rgba(148,163,184,0.10)"
+          }
+        }
+      }
+    }),
+    [selectedMeta]
+  );
   return (
     <div className="overview-grid">
       <div className="overview-sequence-rail" aria-label="Sequence State">
@@ -248,6 +303,15 @@ export default function OverviewPanel({ state, ignitorStatus }) {
                   <div className="overview-trend-title">{selectedMeta.title}</div>
                 </div>
                 <div className="overview-trend-meta">
+                  <button
+                    type="button"
+                    className="overview-trend-expand"
+                    onClick={() => setTrendModalOpen(true)}
+                    aria-label={`Expand ${selectedMeta.title} graph`}
+                    title="Expand graph"
+                  >
+                    Expand
+                  </button>
                   <div className="overview-trend-meta-row">
                     <div className="overview-trend-source">MAX {formatSelectedValue(selectedSignal, selectedMax)}</div>
                     <div className="overview-trend-source">{selectedMeta.source}</div>
@@ -260,6 +324,13 @@ export default function OverviewPanel({ state, ignitorStatus }) {
               </div>
             </div>
           </div>
+          {trendModalOpen && (
+            <LiveChartModal title={`${selectedMeta.title} Live Trend`} onClose={() => setTrendModalOpen(false)}>
+              <div style={{ height: "100%", width: "100%" }}>
+                <Line data={trendChartData} options={trendModalChartOptions} />
+              </div>
+            </LiveChartModal>
+          )}
         </div>
       </div>
 
@@ -271,7 +342,7 @@ export default function OverviewPanel({ state, ignitorStatus }) {
       <div className="section overview-right no-bg">
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <div style={{ width: "100%", maxWidth: 360 }}>
-            <ThermocoupleSelectedPanel tempC={tt1Value} limitC={350} />
+            <ThermocoupleSelectedPanel tempC={tt1Value} limitC={TT1_LIMIT_C} />
           </div>
 
           <div className="kicker" style={{ marginTop: 18, marginBottom: 12, textAlign: "center" }}>Load Cells</div>
@@ -297,15 +368,25 @@ export default function OverviewPanel({ state, ignitorStatus }) {
               <div className="continuity-grid">
                 <div className="continuity-chip">
                   <span className="cut-label">IGN-1</span>
-                  <span className={`continuity-pill ${ignitorStatus?.ignitor1Class || "unknown"}`}>
-                    {ignitorStatus?.ignitor1Label || "UNKNOWN"}
-                  </span>
+                  <div className="continuity-inline">
+                    <span className={`continuity-pill ${ignitorStatus?.ignitor1Class || "unknown"}`}>
+                      {ignitorStatus?.ignitor1Label || "UNKNOWN"}
+                    </span>
+                    <span className={`continuity-pill ${ignitorStatus?.ignitor1FiredClass || "unknown"}`}>
+                      {ignitorStatus?.ignitor1FiredLabel || "NOT FIRED"}
+                    </span>
+                  </div>
                 </div>
                 <div className="continuity-chip">
                   <span className="cut-label">IGN-2</span>
-                  <span className={`continuity-pill ${ignitorStatus?.ignitor2Class || "unknown"}`}>
-                    {ignitorStatus?.ignitor2Label || "UNKNOWN"}
-                  </span>
+                  <div className="continuity-inline">
+                    <span className={`continuity-pill ${ignitorStatus?.ignitor2Class || "unknown"}`}>
+                      {ignitorStatus?.ignitor2Label || "UNKNOWN"}
+                    </span>
+                    <span className={`continuity-pill ${ignitorStatus?.ignitor2FiredClass || "unknown"}`}>
+                      {ignitorStatus?.ignitor2FiredLabel || "NOT FIRED"}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

@@ -23,8 +23,8 @@ export default function ValveMap({ valves = [] }) {
                 alignItems: 'center',
                 padding: '8px 10px',
                 borderRadius: 8,
-                background: 'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))',
-                border: '1px solid rgba(255,255,255,0.03)'
+                background: 'linear-gradient(180deg, var(--surface-3), var(--surface-4))',
+                border: '1px solid var(--glass-border)'
               }}>
                 <div style={{ fontSize: 13 }}>{v.name ?? `V${i}`}</div>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
@@ -41,7 +41,7 @@ export default function ValveMap({ valves = [] }) {
             );
           })
         ) : (
-          <div style={{ color: 'rgba(255,255,255,0.6)', padding: 8 }}>No valve data</div>
+          <div style={{ color: 'var(--ink-soft)', padding: 8 }}>No valve data</div>
         )}
       </div>
     </div>

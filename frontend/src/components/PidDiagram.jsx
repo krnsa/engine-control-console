@@ -34,6 +34,8 @@ export default function PidDiagram({ state, selectedKey = null, onSelect = () =>
   const sensors = state?.sensors || {};
   const tank = state?.system?.tank || {};
   const valves = state?.valves || {};
+  const plcValveStatus = state?.system?.valveStatus || {};
+  const plcValvePower = plcValveStatus?.power || {};
 
   const [zoomOpen, setZoomOpen] = useState(false);
   const [hovered, setHovered] = useState(null);
@@ -102,10 +104,17 @@ export default function PidDiagram({ state, selectedKey = null, onSelect = () =>
   const renderValveCard = (item) => {
     const v = typeof item.value === "string" ? item.value.toUpperCase() : "UNKNOWN";
     const statusClass = v === "OPEN" ? "status-open" : v === "CLOSED" ? "status-closed" : "status-unknown";
+    const valveIndexMap = { mfv: 1, mov: 2, tvv: 3, ofv: 4 };
+    const valveIndex = valveIndexMap[item.key];
+    const powerKey = `valve${valveIndex}`;
+    const hasPower = typeof plcValvePower?.[powerKey] === "boolean" ? plcValvePower[powerKey] : null;
+    const powerLabel = hasPower === true ? "POWER ON" : hasPower === false ? "POWER OFF" : "POWER ?";
+    const powerClass = hasPower === true ? "status-power-on" : hasPower === false ? "status-power-off" : "status-unknown";
     return (
       <div className={`pid-value ${selectedKey === item.key ? "selected" : ""} interactive`} key={item.label} onClick={() => onSelect(item.key)}>
         <div className="pid-tag-label">{item.label}</div>
         <div className={`pid-tag-value status ${statusClass}`}>{v}</div>
+        <div className={`pid-tag-value status ${powerClass}`}>{powerLabel}</div>
       </div>
     );
   };

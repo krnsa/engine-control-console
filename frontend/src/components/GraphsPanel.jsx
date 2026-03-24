@@ -55,9 +55,9 @@ function Tile({ title, valueText, unitText, children, onOpen }) {
       tabIndex={0}
       style={{
         borderRadius: 16,
-        border: "1px solid rgba(255,255,255,0.12)",
-        background: "rgba(22, 26, 33, 0.55)",
-        boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
+        border: "1px solid var(--glass-border)",
+        background: "linear-gradient(180deg, var(--surface-1), var(--surface-2))",
+        boxShadow: "0 12px 40px var(--shadow-heavy)",
         padding: 14,
         cursor: "pointer",
         height: 280,
@@ -67,12 +67,12 @@ function Tile({ title, valueText, unitText, children, onOpen }) {
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, marginBottom: 8 }}>
-        <div style={{ fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", opacity: 0.7 }}>
+        <div style={{ fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", opacity: 0.8, color: "var(--txt-dim)" }}>
           {title}
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "baseline" }}>
-          <div style={{ fontWeight: 700, opacity: 0.85 }}>{valueText}</div>
-          <div style={{ opacity: 0.65, fontSize: 12 }}>{unitText}</div>
+          <div style={{ fontWeight: 700, opacity: 0.9, color: "var(--txt-0)" }}>{valueText}</div>
+          <div style={{ opacity: 0.75, fontSize: 12, color: "var(--txt-dim)" }}>{unitText}</div>
         </div>
       </div>
 

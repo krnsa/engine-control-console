@@ -22,18 +22,30 @@ export default function LogsPanel({ state, socket }) {
     ? videoLogging.reason ?? "--"
     : "BACKEND_OFFLINE";
   const effectiveLoggingActive = backendConnected && Boolean(logging.active);
+  const loggingAnimationState = effectiveLoggingActive
+    ? "live"
+    : backendConnected
+    ? "idle"
+    : "offline";
+
+  const statusWithPulse = (label, ok, stateName = ok ? "live" : "offline") => (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+      <span className={`logs-status-pulse ${stateName}`} aria-hidden />
+      <span className={`tag ${ok ? "ok" : "bad"}`}>{label}</span>
+    </span>
+  );
 
   return (
     <div style={{ display: "grid", gap: 18 }}>
       <div className="conn-grid">
-        <div className="section no-bg">
+        <div className={`section no-bg logs-panel-main ${loggingAnimationState}`}>
           <div className="kicker" style={{ marginBottom: 12, textAlign: "left" }}>Data Logging</div>
-          <div style={{ display: "grid", gap: 12 }}>
+            <div style={{ display: "grid", gap: 12, flex: 1 }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
               <div className="tile" style={{ padding: 12, borderRadius: 12 }}>
                 <div className="mono" style={{ fontSize: 11, opacity: 0.7, marginBottom: 6 }}>CSV LOGGING CHECK</div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span className={`tag ${effectiveCsvOk ? "ok" : "bad"}`}>{effectiveCsvOk ? "OK" : "NOT OK"}</span>
+                  {statusWithPulse(effectiveCsvOk ? "OK" : "NOT OK", effectiveCsvOk, effectiveCsvOk ? "live" : backendConnected ? "idle" : "offline")}
                   <span className="mono" style={{ opacity: 0.8 }}>{effectiveCsvActive ? "ACTIVE" : "INACTIVE"}</span>
                 </div>
               </div>
@@ -41,7 +53,7 @@ export default function LogsPanel({ state, socket }) {
               <div className="tile" style={{ padding: 12, borderRadius: 12 }}>
                 <div className="mono" style={{ fontSize: 11, opacity: 0.7, marginBottom: 6 }}>CAMERA LOGGING CHECK</div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span className={`tag ${effectiveVideoOk ? "ok" : "bad"}`}>{effectiveVideoOk ? "OK" : "NOT OK"}</span>
+                  {statusWithPulse(effectiveVideoOk ? "OK" : "NOT OK", effectiveVideoOk, effectiveVideoOk ? "live" : backendConnected ? "idle" : "offline")}
                   <span className="mono" style={{ opacity: 0.8 }}>{effectiveVideoReason}</span>
                 </div>
               </div>
@@ -50,11 +62,11 @@ export default function LogsPanel({ state, socket }) {
             <div className="conn-stack">
               <div className="conn-row">
                 <div className="conn-label">Status</div>
-                <span className={`tag ${effectiveLoggingActive ? "ok" : "bad"}`}>{effectiveLoggingActive ? "ACTIVE" : "INACTIVE"}</span>
+                {statusWithPulse(effectiveLoggingActive ? "ACTIVE" : "INACTIVE", effectiveLoggingActive, loggingAnimationState)}
               </div>
               <div className="conn-row">
                 <div className="conn-label">CSV Logging Check</div>
-                <span className={`tag ${effectiveCsvOk ? "ok" : "bad"}`}>{effectiveCsvOk ? "OK" : "NOT OK"}</span>
+                {statusWithPulse(effectiveCsvOk ? "OK" : "NOT OK", effectiveCsvOk, effectiveCsvOk ? "live" : backendConnected ? "idle" : "offline")}
               </div>
               <div className="conn-row">
                 <div className="conn-label">File</div>
@@ -68,7 +80,7 @@ export default function LogsPanel({ state, socket }) {
               </div>
               <div className="conn-row">
                 <div className="conn-label">Camera Logging Check</div>
-                <span className={`tag ${effectiveVideoOk ? "ok" : "bad"}`}>{effectiveVideoOk ? "OK" : "NOT OK"}</span>
+                {statusWithPulse(effectiveVideoOk ? "OK" : "NOT OK", effectiveVideoOk, effectiveVideoOk ? "live" : backendConnected ? "idle" : "offline")}
               </div>
               <div className="conn-row">
                 <div className="conn-label">Video Directory</div>

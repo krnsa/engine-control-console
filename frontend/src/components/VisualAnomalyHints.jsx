@@ -13,7 +13,7 @@ export default function VisualAnomalyHints({ hints = [] }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {hints && hints.length ? (
           hints.map((h, i) => (
-            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)' }}>
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 10px', borderRadius: 8, background: 'linear-gradient(180deg, var(--surface-3), var(--surface-4))', border: '1px solid var(--glass-border)' }}>
               <div style={{ fontSize: 14 }}>{h.label}</div>
               <div style={{ fontSize: 12, fontWeight: 700, color: h.status === 'OK' ? '#10b981' : (h.status === 'Pending' ? '#f59e0b' : '#ef4444') }}>
                 {h.status}
@@ -21,7 +21,7 @@ export default function VisualAnomalyHints({ hints = [] }) {
             </div>
           ))
         ) : (
-          <div style={{ color: 'rgba(255,255,255,0.6)' }}>No visual hints</div>
+          <div style={{ color: 'var(--ink-soft)' }}>No visual hints</div>
         )}
       </div>
     </div>

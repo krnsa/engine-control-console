@@ -35,11 +35,17 @@ function formatElapsedMmSs(totalSeconds) {
   return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 }
 
+function getInitialThemeMode() {
+  if (typeof window === "undefined") return "night";
+  return window.localStorage.getItem("mission-control-theme") || "night";
+}
+
 export default function App() {
   const [activeTab, setActiveTab] = useState("overview");
   const [engineState, setEngineState] = useState(null);
   const [socketStatus, setSocketStatus] = useState({ connected: false });
   const [cameraStreamStatus, setCameraStreamStatus] = useState({});
+  const [themeMode, setThemeMode] = useState(getInitialThemeMode);
 
   const [cameraModalOpen, setCameraModalOpen] = useState(false);
   const [activeCamera, setActiveCamera] = useState(null);
@@ -90,6 +96,11 @@ export default function App() {
     return () => clearInterval(id);
   }, []);
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", themeMode);
+    window.localStorage.setItem("mission-control-theme", themeMode);
+  }, [themeMode]);
+
   const connections = {
     camera1: Boolean(engineState?.system?.cameras?.camera1 || cameraStreamStatus.camera1),
     camera2: Boolean(engineState?.system?.cameras?.camera2 || cameraStreamStatus.camera2),
@@ -105,6 +116,8 @@ export default function App() {
   const ignitors = engineState?.system?.ignitors || {};
   const ign1 = ignitors.ignitor1Connected;
   const ign2 = ignitors.ignitor2Connected;
+  const ign1Fired = ignitors.ignitor1Fired === true;
+  const ign2Fired = ignitors.ignitor2Fired === true;
   const continuityKnown = typeof ign1 === "boolean" && typeof ign2 === "boolean";
   const continuityGood = continuityKnown ? ign1 && ign2 : null;
   const continuityLabel = continuityKnown
@@ -119,6 +132,10 @@ export default function App() {
     typeof ign2 === "boolean" ? (ign2 ? "CONNECTED" : "DISCONNECTED") : "UNKNOWN";
   const ignitor1Class = typeof ign1 === "boolean" ? (ign1 ? "ok" : "bad") : "unknown";
   const ignitor2Class = typeof ign2 === "boolean" ? (ign2 ? "ok" : "bad") : "unknown";
+  const ignitor1FiredLabel = ign1Fired ? "FIRED" : "NOT FIRED";
+  const ignitor2FiredLabel = ign2Fired ? "FIRED" : "NOT FIRED";
+  const ignitor1FiredClass = ign1Fired ? "ok" : "unknown";
+  const ignitor2FiredClass = ign2Fired ? "ok" : "unknown";
   const sequenceCode = typeof sequence.code === "number" ? sequence.code : "--";
   const sequenceName = sequence.name || "--";
   const sequenceOnline = Boolean(sequence.online);
@@ -132,9 +149,14 @@ export default function App() {
     typeof sequenceTimerSec === "number"
       ? `${sequenceTimerSec.toFixed(1)}s (${formatElapsedMmSs(sequenceTimerSec)})`
       : "--";
+  const tank = engineState?.system?.tank || {};
+  const massFlowLbmPerSec = typeof tank.massFlowLbmPerSec === "number" ? tank.massFlowLbmPerSec : null;
+  const massFlowKgPerSec = typeof tank.massFlowKgPerSec === "number" ? tank.massFlowKgPerSec : null;
+  const massFlowLbmText = massFlowLbmPerSec !== null ? `${massFlowLbmPerSec.toFixed(3)} lbm/s` : "--";
+  const massFlowKgText = massFlowKgPerSec !== null ? `${massFlowKgPerSec.toFixed(3)} kg/s` : "--";
 
   return (
-    <div className="app-wrap">
+    <div className={`app-wrap overview-app-surface ${themeMode === "day" ? "theme-day" : "theme-night"}`}>
       <section className="hero">
         <img src={rplLogo} className="brand-left" alt="RPL logo" />
         <img src={ghostLogo} className="brand-right" alt="Ghost logo" />
@@ -148,14 +170,22 @@ export default function App() {
 
       {activeTab === "overview" && (
         <div className="overview-top-strip">
+          <div className="overview-mini-card">
+            <div className="kicker" style={{ textAlign: "left" }}>Mass Flow</div>
+            <div className="overview-mini-value">{massFlowLbmText}</div>
+          </div>
           <div className="overview-clock-block">
             <div className="clock-main">{clockText}</div>
             <div className="clock-sub">STATE TIME {sequenceTimer}</div>
           </div>
+          <div className="overview-mini-card right">
+            <div className="kicker" style={{ textAlign: "right" }}>Mass Flow</div>
+            <div className="overview-mini-value">{massFlowKgText}</div>
+          </div>
         </div>
       )}
 
-      <div className="panel">
+      <div className="panel overview-panel-surface">
         {activeTab === "overview" && (
           <OverviewPanel
             state={engineState}
@@ -165,7 +195,11 @@ export default function App() {
               ignitor1Label,
               ignitor2Label,
               ignitor1Class,
-              ignitor2Class
+              ignitor2Class,
+              ignitor1FiredLabel,
+              ignitor2FiredLabel,
+              ignitor1FiredClass,
+              ignitor2FiredClass
             }}
           />
         )}
@@ -214,7 +248,12 @@ export default function App() {
         )}
 
         {activeTab === "logs" && <LogsPanel state={engineState} socket={socketStatus} />}
-        {activeTab === "settings" && <SettingsPanel />}
+        {activeTab === "settings" && (
+          <SettingsPanel
+            themeMode={themeMode}
+            onThemeChange={setThemeMode}
+          />
+        )}
       </div>
     </div>
   );

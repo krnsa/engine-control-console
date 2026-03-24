@@ -25,7 +25,7 @@ export default function LiveChartModal({ title, onClose, children }) {
   const overlayStyle = {
     position: "fixed",
     inset: 0,
-    background: "rgba(0,0,0,0.65)",
+    background: "var(--overlay-backdrop)",
     zIndex: 99999,
     display: "flex",
     alignItems: "center",
@@ -36,10 +36,10 @@ export default function LiveChartModal({ title, onClose, children }) {
   const cardStyle = {
     width: "min(1200px, 96vw)",
     height: "min(720px, 86vh)",
-    background: "rgba(24, 28, 35, 0.96)",
-    border: "1px solid rgba(255,255,255,0.12)",
+    background: "linear-gradient(180deg, var(--panel-deep-1), var(--panel-deep-2))",
+    border: "1px solid var(--glass-border)",
     borderRadius: "16px",
-    boxShadow: "0 18px 60px rgba(0,0,0,0.55)",
+    boxShadow: "0 18px 60px var(--shadow-modal)",
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
@@ -50,7 +50,7 @@ export default function LiveChartModal({ title, onClose, children }) {
     alignItems: "center",
     justifyContent: "space-between",
     padding: "14px 16px",
-    borderBottom: "1px solid rgba(255,255,255,0.10)",
+    borderBottom: "1px solid var(--glass-border)",
   };
 
   const titleStyle = {
@@ -58,16 +58,16 @@ export default function LiveChartModal({ title, onClose, children }) {
     fontSize: "14px",
     letterSpacing: "0.12em",
     textTransform: "uppercase",
-    color: "rgba(255,255,255,0.85)",
+    color: "var(--txt-0)",
   };
 
   const closeBtnStyle = {
     width: 34,
     height: 34,
     borderRadius: 10,
-    border: "1px solid rgba(255,255,255,0.16)",
-    background: "rgba(255,255,255,0.06)",
-    color: "rgba(255,255,255,0.9)",
+    border: "1px solid var(--glass-border)",
+    background: "var(--surface-3)",
+    color: "var(--txt-0)",
     cursor: "pointer",
     display: "grid",
     placeItems: "center",

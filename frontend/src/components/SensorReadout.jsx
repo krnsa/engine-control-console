@@ -57,7 +57,7 @@ export default function SensorReadout({ title, value, unit = "", max = null, var
 
         <div style={{ minWidth: 84, textAlign: "right" }}>
           <div style={{ fontSize: 22, fontWeight: 700 }}>{safe === null ? "--" : safe.toFixed(1)}</div>
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>{unit}</div>
+          <div style={{ fontSize: 12, color: "var(--ink-soft)" }}>{unit}</div>
         </div>
       </div>
     </div>
