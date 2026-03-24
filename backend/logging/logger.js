@@ -10,6 +10,7 @@ const fs = require("fs");
 const path = require("path");
 const { engineState } = require("../state/engineState");
 const { SYSTEM_CONFIG } = require("../config/system.config");
+const { createHotfireReportTrigger } = require("../reporting/hotfireReportTrigger");
 
 function formatTimestamp(tsMs) {
   const d = new Date(tsMs);
@@ -117,6 +118,8 @@ function buildRow(state) {
     tank.fullWeightLbf ?? "",
     tank.fluidWeightLbf ?? "",
     tank.fluidMaxLbf ?? "",
+    tank.massFlowLbmPerSec ?? "",
+    tank.massFlowKgPerSec ?? "",
     boolToCsv(ignitors.ignitor1Connected),
     boolToCsv(ignitors.ignitor2Connected),
     boolToCsv(cutdown.continuity),
@@ -136,9 +139,13 @@ function startDataLogger() {
     intervalMs,
     videoDirectory,
     videoRecentSec,
-    strictExternalPaths
+    strictExternalPaths,
+    graphsDirectory,
+    reporting
   } = SYSTEM_CONFIG.logging;
   const csvTargetDirectory = csvDirectory || directory;
+  const reportingEnabled = reporting?.enabled !== false;
+  const reportObserveIntervalMs = Math.max(100, reporting?.observeIntervalMs || 250);
 
   if (strictExternalPaths && (!csvTargetDirectory || !fs.existsSync(csvTargetDirectory))) {
     console.error(`[LOGGER] CSV directory unavailable (strict mode): ${csvTargetDirectory || "<unset>"}`);
@@ -166,6 +173,16 @@ function startDataLogger() {
   const fileName = `telemetry-${formatTimestamp(Date.now())}.csv`;
   const filePath = path.join(csvTargetDirectory, fileName);
   const stream = fs.createWriteStream(filePath, { flags: "a" });
+  const reportTrigger =
+    reportingEnabled && graphsDirectory
+      ? createHotfireReportTrigger({
+          graphsDirectory,
+          terminalStates: Array.isArray(reporting?.terminalStates) ? reporting.terminalStates : undefined,
+          activeStates: Array.isArray(reporting?.activeStates) ? reporting.activeStates : undefined,
+          minRowsForReport: reporting?.minRowsForReport
+        })
+      : null;
+  let lastReportObserveTs = 0;
 
   const header = [
     "timestamp_ms",
@@ -195,6 +212,8 @@ function startDataLogger() {
     "tank_full_lbf",
     "tank_fluid_lbf",
     "tank_fluid_max_lbf",
+    "tank_mass_flow_lbm_per_s",
+    "tank_mass_flow_kg_per_s",
     "ignitor1_connected",
     "ignitor2_connected",
     "ignitor_continuity_ok",
@@ -232,6 +251,11 @@ function startDataLogger() {
       lastWrite: now,
       reason: "ACTIVE"
     };
+
+    if (reportTrigger && now - lastReportObserveTs >= reportObserveIntervalMs) {
+      lastReportObserveTs = now;
+      reportTrigger.observe(engineState.getState(), filePath);
+    }
   }, intervalMs);
 
   let lastVideoPath = null;

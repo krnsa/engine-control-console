@@ -96,12 +96,32 @@ const engineState = {
         fullWeightLbf: null,
         fluidWeightLbf: null,
         fluidMaxLbf: null,
+        massFlowLbmPerSec: null,
+        massFlowKgPerSec: null,
         lastRead: null
       },
       ignitors: {
         source: "none",
         ignitor1Connected: null,
         ignitor2Connected: null,
+        ignitor1Fired: false,
+        ignitor2Fired: false,
+        lastRead: null
+      },
+      valveStatus: {
+        source: "none",
+        power: {
+          valve1: null,
+          valve2: null,
+          valve3: null,
+          valve4: null
+        },
+        commandOpen: {
+          valve1: null,
+          valve2: null,
+          valve3: null,
+          valve4: null
+        },
         lastRead: null
       },
       cutdown: {
@@ -154,12 +174,32 @@ const engineState = {
       fullWeightLbf: null,
       fluidWeightLbf: null,
       fluidMaxLbf: null,
+      massFlowLbmPerSec: null,
+      massFlowKgPerSec: null,
       lastRead: null
     };
     this.data.system.ignitors = {
       source: "none",
       ignitor1Connected: null,
       ignitor2Connected: null,
+      ignitor1Fired: false,
+      ignitor2Fired: false,
+      lastRead: null
+    };
+    this.data.system.valveStatus = {
+      source: "none",
+      power: {
+        valve1: null,
+        valve2: null,
+        valve3: null,
+        valve4: null
+      },
+      commandOpen: {
+        valve1: null,
+        valve2: null,
+        valve3: null,
+        valve4: null
+      },
       lastRead: null
     };
     this.data.system.cutdown = {

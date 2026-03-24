@@ -174,6 +174,8 @@ function toSigned16(value) {
   return v > 0x7fff ? v - 0x10000 : v;
 }
 
+const LBM_PER_KG = 2.2046226218;
+
 
 function decodeFloat32FromRegisters(registers, wordOrder = "ABCD") {  /* Big and Little Indian Check Complete */
   if (!Array.isArray(registers) || registers.length < 2) return null;
@@ -208,6 +210,11 @@ function startPlcSequencePoller() {
   let lastStateCode = null;
   let lastWarnTs = 0;
   let lastDebugTs = 0;
+  let tankMassFlowHistory = [];
+  let tankMassFlowStartTs = null;
+  let ignitionArmed = false;
+  let ignitor1EligibleToFire = false;
+  let ignitor2EligibleToFire = false;
   const hasFixedOffset = typeof cfg.fixedRegisterOffset === "number";
   let addrOffset = hasFixedOffset ? cfg.fixedRegisterOffset : 0; // auto-detect 0-based vs 1-based register addressing
 
@@ -380,8 +387,31 @@ function startPlcSequencePoller() {
       }
 
       if (currentState !== lastStateCode) {
+        const previousStateCode = lastStateCode;
         lastStateCode = currentState;
         stateStartTs = now;
+
+        if (currentState === 290) {
+          tankMassFlowHistory = [];
+          tankMassFlowStartTs = now;
+        }
+
+        if (currentState === 400 && previousStateCode !== 400) {
+          ignitionArmed = true;
+        }
+
+        if (currentState === 0 || currentState === 900) {
+          tankMassFlowHistory = [];
+          tankMassFlowStartTs = null;
+          ignitionArmed = false;
+          ignitor1EligibleToFire = false;
+          ignitor2EligibleToFire = false;
+          engineState.data.system.ignitors = {
+            ...(engineState.data.system.ignitors || {}),
+            ignitor1Fired: false,
+            ignitor2Fired: false
+          };
+        }
       }
 
       const elapsedSec =
@@ -442,12 +472,53 @@ function startPlcSequencePoller() {
             ? Math.max(0, totalLoad - tareWeightLbf)
             : prev.fluidWeightLbf ?? null;
 
+        const massFlowWindowSec = Math.max(0.25, Number(tankCfg.massFlowWindowSec) || 2);
+        const massFlowMinDeltaSec = Math.max(0.05, Number(tankCfg.massFlowMinDeltaSec) || 0.25);
+        let massFlowLbmPerSec = prev.massFlowLbmPerSec ?? null;
+        let massFlowKgPerSec = prev.massFlowKgPerSec ?? null;
+        const massFlowEnabled = typeof tankMassFlowStartTs === "number" && now >= tankMassFlowStartTs;
+
+        if (typeof fluidWeightLbf === "number" && massFlowEnabled) {
+          tankMassFlowHistory.push({ ts: now, fluidWeightLbf });
+          const keepAfterTs = now - Math.max(1000, massFlowWindowSec * 3000);
+          tankMassFlowHistory = tankMassFlowHistory.filter((sample) => sample.ts >= keepAfterTs);
+
+          let reference = null;
+          for (let i = tankMassFlowHistory.length - 1; i >= 0; i -= 1) {
+            const sample = tankMassFlowHistory[i];
+            const ageSec = (now - sample.ts) / 1000;
+            if (ageSec >= massFlowWindowSec) {
+              reference = sample;
+              break;
+            }
+          }
+          if (!reference && tankMassFlowHistory.length > 0) {
+            reference = tankMassFlowHistory[0];
+          }
+
+          if (reference) {
+            const dtSec = (now - reference.ts) / 1000;
+            if (dtSec >= massFlowMinDeltaSec) {
+              massFlowLbmPerSec = (fluidWeightLbf - reference.fluidWeightLbf) / dtSec;
+              massFlowKgPerSec = massFlowLbmPerSec / LBM_PER_KG;
+            }
+          }
+        } else {
+          if (!massFlowEnabled) {
+            tankMassFlowHistory = [];
+          }
+          massFlowLbmPerSec = null;
+          massFlowKgPerSec = null;
+        }
+
         engineState.data.system.tank = {
           source: "modbus-tcp",
           tareWeightLbf,
           fullWeightLbf,
           fluidWeightLbf,
           fluidMaxLbf,
+          massFlowLbmPerSec,
+          massFlowKgPerSec,
           lastRead: now
         };
       }
@@ -457,6 +528,8 @@ function startPlcSequencePoller() {
         const prevIgnitors = engineState.data.system.ignitors || {};
         let ignitor1Connected = prevIgnitors.ignitor1Connected ?? null;
         let ignitor2Connected = prevIgnitors.ignitor2Connected ?? null;
+        let ignitor1Fired = prevIgnitors.ignitor1Fired === true;
+        let ignitor2Fired = prevIgnitors.ignitor2Fired === true;
         const trueMeansDisconnected = ignitorCfg.trueMeansDisconnected !== false;
 
         const toConnected = (rawRegisterValue) => {
@@ -484,10 +557,40 @@ function startPlcSequencePoller() {
           }
         }
 
+        if (ignitionArmed) {
+          // An ignitor is eligible once it is observed connected either before
+          // or after the arm state is entered. This avoids missing a fire event
+          // when continuity drops in the same poll that sequence state 400 appears.
+          if (prevIgnitors.ignitor1Connected === true || ignitor1Connected === true) {
+            ignitor1EligibleToFire = true;
+          }
+          if (prevIgnitors.ignitor2Connected === true || ignitor2Connected === true) {
+            ignitor2EligibleToFire = true;
+          }
+
+          if (
+            ignitor1EligibleToFire &&
+            prevIgnitors.ignitor1Connected === true &&
+            ignitor1Connected === false
+          ) {
+            ignitor1Fired = true;
+          }
+
+          if (
+            ignitor2EligibleToFire &&
+            prevIgnitors.ignitor2Connected === true &&
+            ignitor2Connected === false
+          ) {
+            ignitor2Fired = true;
+          }
+        }
+
         engineState.data.system.ignitors = {
           source: "modbus-tcp",
           ignitor1Connected,
           ignitor2Connected,
+          ignitor1Fired,
+          ignitor2Fired,
           lastRead: now
         };
 
@@ -497,6 +600,74 @@ function startPlcSequencePoller() {
           ...(engineState.data.system.cutdown || {}),
           continuity: bothKnown ? ignitor1Connected && ignitor2Connected : null,
           lastUpdate: now
+        };
+      }
+
+      const valveCfg = cfg.valveStatus || {};
+      if (valveCfg.enabled) {
+        const valveKeys = ["mfv", "mov", "tvv", "ofv"];
+        const toValves = (powerBits, cmdBits) => {
+          const next = {};
+          for (let i = 0; i < valveKeys.length; i++) {
+            const hasPower = typeof powerBits?.[i] === "boolean" ? powerBits[i] : null;
+            const commandOpen = typeof cmdBits?.[i] === "boolean" ? cmdBits[i] : null;
+            if (typeof hasPower !== "boolean" || typeof commandOpen !== "boolean") {
+              next[valveKeys[i]] = "UNKNOWN";
+            } else {
+              next[valveKeys[i]] = hasPower && commandOpen ? "OPEN" : "CLOSED";
+            }
+          }
+          return next;
+        };
+
+        let powerBits = null;
+        let commandBits = null;
+
+        const powerRegs = Array.isArray(valveCfg.powerRegisters) ? valveCfg.powerRegisters : [];
+        const cmdRegs = Array.isArray(valveCfg.commandOpenRegisters) ? valveCfg.commandOpenRegisters : [];
+
+        const canReadAsContiguous = powerRegs.length === 4 && cmdRegs.length === 4 &&
+          powerRegs[1] === powerRegs[0] + 1 &&
+          powerRegs[2] === powerRegs[0] + 2 &&
+          powerRegs[3] === powerRegs[0] + 3 &&
+          cmdRegs[1] === cmdRegs[0] + 1 &&
+          cmdRegs[2] === cmdRegs[0] + 2 &&
+          cmdRegs[3] === cmdRegs[0] + 3;
+
+        if (canReadAsContiguous) {
+          try {
+            powerBits = await readDiscreteInputsWithFallback(powerRegs[0], 4);
+          } catch {
+            // keep unknown values on read failure
+          }
+          try {
+            commandBits = await readDiscreteInputsWithFallback(cmdRegs[0], 4);
+          } catch {
+            // keep unknown values on read failure
+          }
+        }
+
+        const nextValves = toValves(powerBits, commandBits);
+        engineState.data.valves = {
+          ...engineState.data.valves,
+          ...nextValves
+        };
+
+        engineState.data.system.valveStatus = {
+          source: "modbus-tcp",
+          power: {
+            valve1: typeof powerBits?.[0] === "boolean" ? powerBits[0] : null,
+            valve2: typeof powerBits?.[1] === "boolean" ? powerBits[1] : null,
+            valve3: typeof powerBits?.[2] === "boolean" ? powerBits[2] : null,
+            valve4: typeof powerBits?.[3] === "boolean" ? powerBits[3] : null
+          },
+          commandOpen: {
+            valve1: typeof commandBits?.[0] === "boolean" ? commandBits[0] : null,
+            valve2: typeof commandBits?.[1] === "boolean" ? commandBits[1] : null,
+            valve3: typeof commandBits?.[2] === "boolean" ? commandBits[2] : null,
+            valve4: typeof commandBits?.[3] === "boolean" ? commandBits[3] : null
+          },
+          lastRead: now
         };
       }
     } catch (err) {

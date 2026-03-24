@@ -1,0 +1,22 @@
+{
+  "sourceCsv": "D:\\Test Data\\telemetry-20260324-090447.csv",
+  "generatedAt": "2026-03-24T13:31:32.359Z",
+  "runTimestampMs": 1774359071033,
+  "endTimestampMs": null,
+  "rowCount": 201692,
+  "reportRowCount": 18337,
+  "reportDecimated": true,
+  "stateTransitions": [
+    {
+      "code": 100,
+      "tSec": 0
+    }
+  ],
+  "massFlow": {
+    "samples": 18031,
+    "minLbmPerSec": -0.1017,
+    "maxLbmPerSec": 0.0922,
+    "peakAbsLbmPerSec": -0.1017,
+    "avgLbmPerSec": -0.0001
+  }
+}

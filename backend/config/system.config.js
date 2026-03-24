@@ -17,8 +17,8 @@ const SYSTEM_CONFIG = {
       pt1: -2.127,// S/N 8029012, zero 4.017 mA                // Used for the 
       pt2: -2.003,// S/N 8028976, zero 3.984 mA               // Used for the mfv 
       pt3: 5.502,  // S/N 8028939, zero 4.044 mA     
-      pt4: -7.508, // S/N 8029080, zero 3.940 mA //-7.508 original
-      pt5: -4.006, // S/N 8028945, zero 3.968 mA
+      pt4: -7.508, // S/N 8029080, zero 3.940 mA //-7.508 original   //pt4
+      pt5: -4.006, // S/N 8028945, zero 3.968 mA                     //pt5
       pt6: -2.504  // S/N 8029051, zero 3.980 mA              // Used for the 
     },
     pressureZeroMa: {
@@ -93,16 +93,25 @@ const SYSTEM_CONFIG = {
       fullRegister: 2,
       signed: true,
       scaleDivisor: 100,
-      maxMultiplier: 1.2
+      maxMultiplier: 1.2,
+      massFlowWindowSec: 2,
+      massFlowMinDeltaSec: 0.25
     },
     // Ignitor continuity from PLC/Modbus.
     // Raw false/0 = connected, true/1 = disconnected.
-    ignitorContinuity: {
-      enabled: true,
-      // 1xxxx Modbus discrete-input addresses from PLC map.
-      ignitor1Register: 10465,
+    ignitorContinuity: {                                       // changed to the state register - so can know if the charge went off or not
+      enabled: true,                                // Aditya Check - currently set to true
+      // 1xxxx Modbus discrete-input addresses from PLC map.                          
+      ignitor1Register: 10465,                                         //Modbus Address is the same as the last state sequence
       ignitor2Register: 10466,
       trueMeansDisconnected: true
+    },
+    // Valve command/power status from PLC discrete inputs (1xxxx map).
+    // OPEN is reported only when both power and command-open are true.
+    valveStatus: {
+      enabled: true,
+      powerRegisters: [10433, 10434, 10435, 10436],   
+      commandOpenRegisters: [10437, 10438, 10439, 10440]
     },
     states: {
       0: "Manual Control",
@@ -125,13 +134,22 @@ const SYSTEM_CONFIG = {
     directory: "./logs",
     // Locked CSV target on SD card.
     csvDirectory: "D:/Test Data",
+    // Generated graph/report artifacts.
+    graphsDirectory: "D:/Graphs",
     intervalMs: 1,
     // Locked camera/video target on SD card (MediaMTX recordPath root).
     videoDirectory: "D:/Recordings",
     // If true, logger refuses to start unless locked SD card folders exist.
     strictExternalPaths: true,
     // How recent a video file write must be to be considered actively recording.
-    videoRecentSec: 6
+    videoRecentSec: 6,
+    reporting: {
+      enabled: true,
+      observeIntervalMs: 250,
+      minRowsForReport: 10,
+      terminalStates: [500, 800, 900],
+      activeStates: [200, 250, 290, 300, 310, 320, 350, 400]
+    }
   },
 
   smoothing: {

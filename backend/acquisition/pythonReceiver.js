@@ -20,6 +20,7 @@ const {
 } = require("./scaling");
 
 const PORT = 9000;
+const USE_PLC_VALVE_STATUS = SYSTEM_CONFIG.plcSequence?.valveStatus?.enabled === true;
 
 const {
   pressureMaxPsi,
@@ -146,17 +147,19 @@ function startPythonReceiver() {
               )
             );
 
-          engineState.data.valves.mfv =
-            scaleValveState(parsed.valves?.mfv);
+          if (!USE_PLC_VALVE_STATUS) {
+            engineState.data.valves.mfv =
+              scaleValveState(parsed.valves?.mfv);
 
-          engineState.data.valves.mov =
-            scaleValveState(parsed.valves?.mov);
+            engineState.data.valves.mov =
+              scaleValveState(parsed.valves?.mov);
 
-          engineState.data.valves.tvv =
-            scaleValveState(parsed.valves?.tvv);
+            engineState.data.valves.tvv =
+              scaleValveState(parsed.valves?.tvv);
 
-          engineState.data.valves.ofv =
-            scaleValveState(parsed.valves?.ofv);
+            engineState.data.valves.ofv =
+              scaleValveState(parsed.valves?.ofv);
+          }
 
           engineState.data.timestamp = Date.now();
           engineState.data.system.lastUpdate = Date.now();
