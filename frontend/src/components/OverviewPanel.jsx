@@ -22,12 +22,12 @@ import LiveChartModal from "./LiveChartModal";
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
 
 const PT_CONFIG = [
-  { id: "pt1", label: "PT-1 Ox Feed", unit: "psi", min: 0, max: 2000, color: "#0ea5e9" },
+  { id: "pt1", label: "PT-1 Nitrous Feed", unit: "psi", min: 0, max: 2000, color: "#0ea5e9" },
   { id: "pt2", label: "PT-2 IPA Tank", unit: "psi", min: 0, max: 2000, color: "#f97316" },
-  { id: "pt3", label: "PT-3 Ox Feed", unit: "psi", min: 0, max: 2000, color: "#22c55e" },
-  { id: "pt4", label: "PT-4 Regen Inlet", unit: "psi", min: 0, max: 2000, color: "#eab308" },
-  { id: "pt5", label: "PT-5 Injector Manifold", unit: "psi", min: 0, max: 2000, color: "#9ca3af" },
-  { id: "pt6", label: "PT-6 Nitrous Tank", unit: "psi", min: 0, max: 2000, color: "#ef4444" }
+  { id: "pt3", label: "PT-3 Nitrous Tank", unit: "psi", min: 0, max: 2000, color: "#22c55e" },
+  { id: "pt4", label: "PT-4 Injector Manifold", unit: "psi", min: 0, max: 2000, color: "#eab308" },
+  { id: "pt5", label: "PT-5 Chamber", unit: "psi", min: 0, max: 2000, color: "#9ca3af" },
+  { id: "pt6", label: "PT-6 Regen Inlet", unit: "psi", min: 0, max: 2000, color: "#ef4444" }
 ];
 
 const TANK_GAUGE_MIN_LBF = 0;
@@ -50,12 +50,12 @@ const SEQUENCE_STATES = [
   { code: 900, name: "Reset" }
 ];
 const SIGNAL_META = {
-  pt1: { title: "PT-1 Ox Feed", unit: "psi", source: "AIN0", kind: "analog", color: "#38bdf8" },
+  pt1: { title: "PT-1 Nitrous Feed", unit: "psi", source: "AIN0", kind: "analog", color: "#38bdf8" },
   pt2: { title: "PT-2 IPA Tank", unit: "psi", source: "AIN1", kind: "analog", color: "#fb923c" },
-  pt3: { title: "PT-3 Oxidizer Feed", unit: "psi", source: "AIN2", kind: "analog", color: "#4ade80" },
-  pt4: { title: "PT-4 Regen Inlet", unit: "psi", source: "AIN3", kind: "analog", color: "#facc15" },
-  pt5: { title: "PT-5 Injector Manifold", unit: "psi", source: "AIN4", kind: "analog", color: "#cbd5e1" },
-  pt6: { title: "PT-6 Nitrous Tank", unit: "psi", source: "AIN5", kind: "analog", color: "#f87171" },
+  pt3: { title: "PT-3 Nitrous Tank", unit: "psi", source: "AIN2", kind: "analog", color: "#4ade80" },
+  pt4: { title: "PT-4 Injector Manifold", unit: "psi", source: "AIN3", kind: "analog", color: "#facc15" },
+  pt5: { title: "PT-5 Chamber", unit: "psi", source: "AIN4", kind: "analog", color: "#cbd5e1" },
+  pt6: { title: "PT-6 Regen Inlet", unit: "psi", source: "AIN5", kind: "analog", color: "#f87171" },
   loadCell1: { title: "Load Cell 1", unit: "lbf", source: "AIN7", kind: "analog", color: "#f97316" },
   loadCell2: { title: "Load Cell 2", unit: "lbf", source: "AIN6", kind: "analog", color: "#60a5fa" },
   loadCell2Tare: { title: "Load Cell 2 Tare", unit: "lbf", source: "PLC REG 1", kind: "analog", color: "#93c5fd" },
@@ -292,6 +292,7 @@ export default function OverviewPanel({ state, ignitorStatus }) {
                 min={pt.min}
                 max={pt.max}
                 color={pt.color}
+                size={152}
               />
             ))}
           </div>
@@ -353,6 +354,7 @@ export default function OverviewPanel({ state, ignitorStatus }) {
               fluidWeightLbf={state?.system?.tank?.fluidWeightLbf}
               tareWeightLbf={state?.system?.tank?.tareWeightLbf}
               fluidMaxLbf={state?.system?.tank?.fluidMaxLbf}
+              residualFluidLbf={state?.system?.tank?.residualFluidLbf}
               maxTankLbf={220.46}
               gaugeMinLbf={TANK_GAUGE_MIN_LBF}
               gaugeMaxLbf={TANK_GAUGE_MAX_LBF}

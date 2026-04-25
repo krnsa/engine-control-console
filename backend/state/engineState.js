@@ -96,6 +96,7 @@ const engineState = {
         fullWeightLbf: null,
         fluidWeightLbf: null,
         fluidMaxLbf: null,
+        residualFluidLbf: null,
         massFlowLbmPerSec: null,
         massFlowKgPerSec: null,
         lastRead: null
@@ -174,6 +175,7 @@ const engineState = {
       fullWeightLbf: null,
       fluidWeightLbf: null,
       fluidMaxLbf: null,
+      residualFluidLbf: null,
       massFlowLbmPerSec: null,
       massFlowKgPerSec: null,
       lastRead: null

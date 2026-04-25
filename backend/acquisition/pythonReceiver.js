@@ -118,7 +118,8 @@ function startPythonReceiver() {
                   249,
                   loadCell1MinMa ?? 3.5,
                   loadCell1MaxMa ?? 20.8,
-                  loadCell1DeadbandLb ?? 0
+                  loadCell1DeadbandLb ?? 0,
+                  true
                 )
               )
             );

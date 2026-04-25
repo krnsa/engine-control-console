@@ -50,12 +50,12 @@ export default function PidDiagram({ state, selectedKey = null, onSelect = () =>
       <img className="pid-base-image" src={pidVectorSvg} alt="P&ID diagram" />
       <div className="pid-schedule">
         <div className="pid-schedule-title">TRANSDUCER SCHEDULE</div>
-        <div className="sched-item" onMouseEnter={() => setHovered("pt1")} onMouseLeave={() => setHovered(null)}>PT-1: OX FEED PRESSURE</div>
+        <div className="sched-item" onMouseEnter={() => setHovered("pt1")} onMouseLeave={() => setHovered(null)}>PT-1: NITROUS FEED PRESSURE</div>
         <div className="sched-item" onMouseEnter={() => setHovered("pt2")} onMouseLeave={() => setHovered(null)}>PT-2: IPA TANK PRESSURE</div>
-        <div className="sched-item" onMouseEnter={() => setHovered("pt3")} onMouseLeave={() => setHovered(null)}>PT-3: OXIDIZER FEED PRESSURE</div>
-        <div className="sched-item" onMouseEnter={() => setHovered("pt4")} onMouseLeave={() => setHovered(null)}>PT-4: REGEN INLET PRESSURE</div>
-        <div className="sched-item" onMouseEnter={() => setHovered("pt5")} onMouseLeave={() => setHovered(null)}>PT-5: FUEL PRESSURE (INJECTOR MANIFOLD)</div>
-        <div className="sched-item" onMouseEnter={() => setHovered("pt6")} onMouseLeave={() => setHovered(null)}>PT-6: NITROUS TANK PRESSURE</div>
+        <div className="sched-item" onMouseEnter={() => setHovered("pt3")} onMouseLeave={() => setHovered(null)}>PT-3: NITROUS TANK PRESSURE</div>
+        <div className="sched-item" onMouseEnter={() => setHovered("pt4")} onMouseLeave={() => setHovered(null)}>PT-4: INJECTOR MANIFOLD PRESSURE</div>
+        <div className="sched-item" onMouseEnter={() => setHovered("pt5")} onMouseLeave={() => setHovered(null)}>PT-5: COMBUSTION CHAMBER PRESSURE</div>
+        <div className="sched-item" onMouseEnter={() => setHovered("pt6")} onMouseLeave={() => setHovered(null)}>PT-6: REGEN INLET PRESSURE</div>
         <div className="sched-item" onMouseEnter={() => setHovered("tt1")} onMouseLeave={() => setHovered(null)}>TT-1: ENGINE THROAT TEMPERATURE</div>
       </div>
     </div>

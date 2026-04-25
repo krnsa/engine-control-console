@@ -19,6 +19,7 @@ function scalePressurePsi(voltage, maxPsi, zeroMa = 4, spanMa = 16, deadbandPsi 
   if (typeof voltage !== "number") return null;
   if (voltage < V_MIN || voltage > V_MAX) return null;
 
+
   const ma = (voltage / 249) * 1000;
   // Previous formula kept for reference (double zero-correction path):
   // let psi = ((ma - 4) / spanMa) * maxPsi + zeroOffsetPsi;
@@ -49,7 +50,8 @@ function scaleCurrentLoopLb(
   shuntOhms = 249,
   minMa = 3.5,
   maxMa = 20.8,
-  zeroDeadbandLb = 0
+  zeroDeadbandLb = 0,
+  preserveNegative = false
 ) {
   const V_MIN = (minMa / 1000) * shuntOhms;
   const V_MAX = (maxMa / 1000) * shuntOhms;
@@ -59,6 +61,10 @@ function scaleCurrentLoopLb(
 
   const ma = (voltage / shuntOhms) * 1000;
   let lb = ((ma - 4) / spanMa) * maxLb + zeroOffsetLb;
+  if (preserveNegative) {
+    if (zeroDeadbandLb > 0 && lb >= 0 && lb < zeroDeadbandLb) lb = 0;
+    return lb;
+  }
   if (lb < zeroDeadbandLb) lb = 0;
   return lb > 0 ? lb : 0;
 }

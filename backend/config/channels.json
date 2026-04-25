@@ -2,7 +2,7 @@
   "sensors": [
     {
       "id": "pt1",
-      "label": "Ox Feed Pressure",
+      "label": "Nitrous Feed Pressure",
       "unit": "psi",
       "type": "pressure",
       "source": "pressures.pt1"
@@ -16,28 +16,28 @@
     },
     {
       "id": "pt3",
-      "label": "Oxidizer Feed Pressure",
+      "label": "Nitrous Tank Pressure",
       "unit": "psi",
       "type": "pressure",
       "source": "pressures.pt3"
     },
     {
       "id": "pt4",
-      "label": "Regen Inlet Pressure",
+      "label": "Injector Manifold Pressure",
       "unit": "psi",
       "type": "pressure",
       "source": "pressures.pt4"
     },
     {
       "id": "pt5",
-      "label": "Fuel Pressure (Injector Manifold)",
+      "label": "Combustion Chamber Pressure",
       "unit": "psi",
       "type": "pressure",
       "source": "pressures.pt5"
     },
     {
       "id": "pt6",
-      "label": "Nitrous Tank Pressure",
+      "label": "Regen Inlet Pressure",
       "unit": "psi",
       "type": "pressure",
       "source": "pressures.pt6"

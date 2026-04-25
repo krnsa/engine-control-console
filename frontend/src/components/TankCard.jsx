@@ -10,6 +10,7 @@ export default function TankCard({
   fluidWeightLbf,
   tareWeightLbf,
   fluidMaxLbf,
+  residualFluidLbf,
   maxTankLbf = 220.46,
   fluidLabel = "N2O",
   gaugeMinLbf = 0,
@@ -27,10 +28,13 @@ export default function TankCard({
   const hasTareReading = typeof tareWeightLbf === "number";
   const tareWeight = hasTareReading ? tareWeightLbf : null;
   const hasFluidMax = typeof fluidMaxLbf === "number" && fluidMaxLbf > 0;
+  const hasResidualReading = typeof residualFluidLbf === "number";
+  const residualWeight = hasResidualReading ? Math.max(0, residualFluidLbf) : null;
 
   if (hasTotalReading) {
     peakRef.current = typeof peakRef.current === "number" ? Math.max(peakRef.current, totalLoad) : totalLoad;
   }
+
   const autoSteps =
     autoScaleEnabled && hasFluidReading && fluidWeight > autoScaleStartLbf
       ? Math.floor((fluidWeight - autoScaleStartLbf) / Math.max(1, autoScaleStepTriggerLbf)) + 1
@@ -88,6 +92,11 @@ export default function TankCard({
           <div className="statBox">
             <div className="t">Tare</div>
             <div className="v blue">{typeof tareWeight === "number" ? tareWeight.toFixed(2) : "--"} LBF</div>
+          </div>
+
+          <div className="statBox">
+            <div className="t">Residual Fluid</div>
+            <div className="v blue">{typeof residualWeight === "number" ? residualWeight.toFixed(2) : "--"} LBF</div>
           </div>
 
           <div className="statBox">

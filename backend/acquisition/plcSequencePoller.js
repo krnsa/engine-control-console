@@ -18,6 +18,13 @@ function buildReadRequest(transactionId, unitId, functionCode, startAddress, qua
   return buf;
 }
 
+// 1.1.1.119 - 1.1.1.125
+// 1.1.2.119 - 1.1.2.125
+// 1.1.3.113 - 1.1.3.129
+// 1.1.4.110 - 1.1.4.127
+// 159.124.234.260 - 159.124.345.659
+
+
 function parseReadResponse(buf, expectedFunctionCode, expectedQuantity) {
   if (!Buffer.isBuffer(buf) || buf.length < 9) {
     return null;
@@ -212,6 +219,7 @@ function startPlcSequencePoller() {
   let lastDebugTs = 0;
   let tankMassFlowHistory = [];
   let tankMassFlowStartTs = null;
+  let tankResidualStableStartTs = null;
   let ignitionArmed = false;
   let ignitor1EligibleToFire = false;
   let ignitor2EligibleToFire = false;
@@ -394,18 +402,29 @@ function startPlcSequencePoller() {
         if (currentState === 290) {
           tankMassFlowHistory = [];
           tankMassFlowStartTs = now;
+          tankResidualStableStartTs = null;
+          engineState.data.system.tank = {
+            ...(engineState.data.system.tank || {}),
+            residualFluidLbf: null
+          };
         }
 
         if (currentState === 400 && previousStateCode !== 400) {
           ignitionArmed = true;
+          tankResidualStableStartTs = null;
         }
 
         if (currentState === 0 || currentState === 900) {
           tankMassFlowHistory = [];
           tankMassFlowStartTs = null;
+          tankResidualStableStartTs = null;
           ignitionArmed = false;
           ignitor1EligibleToFire = false;
           ignitor2EligibleToFire = false;
+          engineState.data.system.tank = {
+            ...(engineState.data.system.tank || {}),
+            residualFluidLbf: null
+          };
           engineState.data.system.ignitors = {
             ...(engineState.data.system.ignitors || {}),
             ignitor1Fired: false,
@@ -469,13 +488,21 @@ function startPlcSequencePoller() {
         const totalLoad = engineState.data.weight?.loadCell2;
         const fluidWeightLbf =
           typeof totalLoad === "number" && typeof tareWeightLbf === "number"
-            ? Math.max(0, totalLoad - tareWeightLbf)
+            ? totalLoad - tareWeightLbf
             : prev.fluidWeightLbf ?? null;
 
         const massFlowWindowSec = Math.max(0.25, Number(tankCfg.massFlowWindowSec) || 2);
         const massFlowMinDeltaSec = Math.max(0.05, Number(tankCfg.massFlowMinDeltaSec) || 0.25);
+        const residualCaptureStartState =
+          typeof tankCfg.residualCaptureStartState === "number" ? tankCfg.residualCaptureStartState : 400;
+        const residualCaptureThresholdLbmPerSec = Math.max(
+          0.001,
+          Number(tankCfg.residualCaptureThresholdLbmPerSec) || 0.05
+        ); 
+        const residualCaptureDurationSec = Math.max(0.25, Number(tankCfg.residualCaptureDurationSec) || 2);
         let massFlowLbmPerSec = prev.massFlowLbmPerSec ?? null;
         let massFlowKgPerSec = prev.massFlowKgPerSec ?? null;
+        let residualFluidLbf = prev.residualFluidLbf ?? null;
         const massFlowEnabled = typeof tankMassFlowStartTs === "number" && now >= tankMassFlowStartTs;
 
         if (typeof fluidWeightLbf === "number" && massFlowEnabled) {
@@ -511,12 +538,37 @@ function startPlcSequencePoller() {
           massFlowKgPerSec = null;
         }
 
+        const residualCaptureEnabled =
+          typeof currentState === "number" &&
+          currentState >= residualCaptureStartState &&
+          typeof fluidWeightLbf === "number" &&
+          typeof massFlowLbmPerSec === "number";
+
+        if (residualCaptureEnabled && residualFluidLbf == null) {
+          if (Math.abs(massFlowLbmPerSec) <= residualCaptureThresholdLbmPerSec) {
+            if (tankResidualStableStartTs == null) {
+              tankResidualStableStartTs = now;
+            }
+            const stableSec = (now - tankResidualStableStartTs) / 1000;
+            if (stableSec >= residualCaptureDurationSec) {
+              residualFluidLbf = fluidWeightLbf;
+            }
+          } else {
+            tankResidualStableStartTs = null;
+          }
+        } else if (residualFluidLbf != null) {
+          tankResidualStableStartTs = null;
+        } else if (!residualCaptureEnabled) {
+          tankResidualStableStartTs = null;
+        }
+
         engineState.data.system.tank = {
           source: "modbus-tcp",
           tareWeightLbf,
           fullWeightLbf,
           fluidWeightLbf,
           fluidMaxLbf,
+          residualFluidLbf,
           massFlowLbmPerSec,
           massFlowKgPerSec,
           lastRead: now

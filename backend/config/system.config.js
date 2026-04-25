@@ -14,28 +14,28 @@ const SYSTEM_CONFIG = {
       pt6: 2000
     },
     pressureZeroOffsetPsi: {
-      pt1: -2.127,// S/N 8029012, zero 4.017 mA                // Used for the 
-      pt2: -2.003,// S/N 8028976, zero 3.984 mA               // Used for the mfv 
-      pt3: 5.502,  // S/N 8028939, zero 4.044 mA     
-      pt4: -7.508, // S/N 8029080, zero 3.940 mA //-7.508 original   //pt4
-      pt5: -4.006, // S/N 8028945, zero 3.968 mA                     //pt5
-      pt6: -2.504  // S/N 8029051, zero 3.980 mA              // Used for the 
+      pt1: -2.127, // S/N 8029012, PT-1 Nitrous Feed, zero 4.017 mA
+      pt2: -2.003, // S/N 8028976, PT-2 IPA Tank, zero 3.984 mA
+      pt3: -2.504, // S/N 8029051, PT-3 Nitrous Tank, zero 3.980 mA
+      pt4: -7.508, // S/N 8029080, PT-4 Injector Manifold, zero 3.940 mA
+      pt5: -4.006, // S/N 8028945, PT-5 Chamber, zero 3.968 mA
+      pt6: 5.502   // S/N 8028939, PT-6 Regen Inlet, zero 4.044 mA
     },
     pressureZeroMa: {
       pt1: 4.017,
       pt2: 3.984,
-      pt3: 4.044,
+      pt3: 3.980,
       pt4: 3.940,
       pt5: 3.968,
-      pt6: 3.980
+      pt6: 4.044
     },
     pressureSpanMa: {
-      pt1: 15.981, // S/N 8029012, span mA
+      pt1: 15.981, // S/N 8029012, PT-1 Nitrous Feed, span mA
       pt2: 15.975, // S/N 8028976, span mA
-      pt3: 15.992, // S/N 8028939, span mA
-      pt4: 15.984, // S/N 8029080, span mA
-      pt5: 15.975, // S/N 8028945, span mA
-      pt6: 15.973  // S/N 8029051, span mA
+      pt3: 15.973, // S/N 8029051, PT-3 Nitrous Tank, span mA
+      pt4: 15.984, // S/N 8029080, PT-4 Injector Manifold, span mA
+      pt5: 15.975, // S/N 8028945, PT-5 Chamber, span mA
+      pt6: 15.992  // S/N 8028939, PT-6 Regen Inlet, span mA
     },
     pressureDeadbandPsi: 0,      // Deadband PSI = Set to 25 PSI - change to the offset provided by the system // Was 30 changed to 3
     loadCell1LbfPerVolt: 1000,
@@ -56,7 +56,7 @@ const SYSTEM_CONFIG = {
   sensors: {
     // Set true only when the corresponding sensor/transmitter wiring is complete.
     availability: {
-      loadCell1: false,
+      loadCell1: true, // set to false before 
       loadCell2: true, // set to false before
       tt1: true
     }
@@ -94,6 +94,9 @@ const SYSTEM_CONFIG = {
       signed: true,
       scaleDivisor: 100,
       maxMultiplier: 1.2,
+      residualCaptureStartState: 400,
+      residualCaptureThresholdLbmPerSec: 0.05,
+      residualCaptureDurationSec: 2,
       massFlowWindowSec: 2,
       massFlowMinDeltaSec: 0.25
     },
